@@ -123,8 +123,6 @@ public class EntityPlayerWithLimitedBlocks implements IExtendedEntityProperties
 			
 			if( limitedBlockAt.getLimitedBlock().equals( block ) )
 			{
-				Log.debug( "Found block in list." );
-				
 				return limitedBlockAt.canPlaceBlock( world );
 			}			
 		}
@@ -158,21 +156,12 @@ public class EntityPlayerWithLimitedBlocks implements IExtendedEntityProperties
 		{
 			limitedBlockAt = new LimitedBlockAt( block );
 			this.limitedBlocksAt.add( limitedBlockAt );
-			
-			Log.debug( "Adding new block." );
-		}
-		else
-		{
-			Log.debug( "Get LimitedBlockAt: " + limitedBlockAt.toString() );
 		}
 		
 		if( limitedBlockAt.getCoordinates().contains( coordinate ) == false )
 		{
 			limitedBlockAt.getCoordinates().add( coordinate );
-			
-			Log.debug( "Adding coordinate " + coordinate.toString() );
 		}
-		Log.debug( "Changed LimitedBlockAt: " + limitedBlockAt.toString() );
 	}
 	
 	public static final void register( EntityPlayer entityPlayer )

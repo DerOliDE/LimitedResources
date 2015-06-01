@@ -63,8 +63,6 @@ public class BlockPlacingEvent
 					{
 						player.addBlock( block, coordinate );
 						event.setCanceled( false );
-						
-						Log.debug( "Block placed." );	
 					}
 				}
 			}
