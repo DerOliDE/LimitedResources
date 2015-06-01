@@ -9,6 +9,7 @@ import de.alaoli.games.minecraft.mods.limitedresources.Log;
 import de.alaoli.games.minecraft.mods.limitedresources.data.Coordinate;
 import de.alaoli.games.minecraft.mods.limitedresources.data.LimitedBlock;
 import de.alaoli.games.minecraft.mods.limitedresources.data.LimitedBlockAt;
+import de.alaoli.games.minecraft.mods.limitedresources.util.NBTUtil;
 import de.alaoli.games.minecraft.mods.limitedresources.util.ParserUtil;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -25,9 +26,9 @@ public class EntityPlayerWithLimitedBlocks implements IExtendedEntityProperties
 	 * Constants
 	 ********************************************************************************/
 	
-	public final static String EXT_PROP_NAME = "de.alaoli.games.minecraft.mods.limitedresources.entities.PlayerPlacedBlocks";
+	public final static String EXT_PROP_NAME = "de.alaoli.games.minecraft.mods.limitedresources.entities.EntityPlayerWithLimitedBlocks";
 	
-	public final static String NBT_LIMITEDBLOCKSAT = "limitedBlocksAt";
+	public final static String NBT_LIMITEDBLOCKSAT_SET = "LIMITEDBLOCKSAT_SET";
 	
 	/********************************************************************************
 	 * Attributes
@@ -41,6 +42,23 @@ public class EntityPlayerWithLimitedBlocks implements IExtendedEntityProperties
 	 * Interface
 	 ********************************************************************************/
 	
+	@Override
+	public void saveNBTData( NBTTagCompound compound ) 
+	{
+		NBTTagCompound prop = new NBTTagCompound();
+		
+		prop.setTag( NBT_LIMITEDBLOCKSAT_SET, NBTUtil.toLimitedBlockAtTagList( this.limitedBlocksAt ) );
+		compound.setTag( EXT_PROP_NAME, prop );
+	}
+
+	@Override
+	public void loadNBTData( NBTTagCompound compound ) 
+	{
+		NBTTagCompound prop = (NBTTagCompound) compound.getTag( EXT_PROP_NAME );
+		this.limitedBlocksAt = NBTUtil.toLimitedBlockAtSet( (NBTTagList) prop.getTag( NBT_LIMITEDBLOCKSAT_SET ) );
+	}	
+	
+	/**
 	@Override
 	public void saveNBTData( NBTTagCompound compound )
 	{
@@ -93,7 +111,7 @@ public class EntityPlayerWithLimitedBlocks implements IExtendedEntityProperties
 			}
 			prop.removeTag( NBT_LIMITEDBLOCKSAT );
 		}
-	}
+	}*/
 
 	@Override
 	public void init( Entity entity, World world ) 
@@ -172,5 +190,5 @@ public class EntityPlayerWithLimitedBlocks implements IExtendedEntityProperties
 	public static final EntityPlayerWithLimitedBlocks get( EntityPlayer entityPlayer )
 	{
 		return (EntityPlayerWithLimitedBlocks) entityPlayer.getExtendedProperties( EntityPlayerWithLimitedBlocks.EXT_PROP_NAME );
-	}	
+	}
 }

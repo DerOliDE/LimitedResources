@@ -27,6 +27,12 @@ public class LimitedBlockAt
 		this.block = block;
 		this.coordinates = new HashSet<Coordinate>();
 	}
+	
+	public LimitedBlockAt( LimitedBlock block, Set<Coordinate> coordinates )
+	{
+		this.block = block;
+		this.coordinates = coordinates;
+	}	
 
 	@Override
 	public String toString() 

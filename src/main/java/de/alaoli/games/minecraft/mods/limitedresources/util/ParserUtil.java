@@ -129,7 +129,7 @@ public class ParserUtil
 	 * @param String
 	 * @return Coordinate
 	 * @throws ParseException
-	 */
+	 *
 	public static Coordinate parseStringToCoordinate( String coordinate ) throws ParseException
 	{
 		int dimId;
@@ -157,7 +157,7 @@ public class ParserUtil
 	 * @param coordinates
 	 * @return Set<Coordinate>
 	 * @throws ParseException 
-	 */
+	 *
 	public static Set<Coordinate> parseStringToCoordinateSet( String coordinates ) throws ParseException
 	{
 		String[] parts;
@@ -178,7 +178,7 @@ public class ParserUtil
 	 * @param String
 	 * @return LimitedBlockAt
 	 * @throws ParseException
-	 */
+	 *
 	public static LimitedBlockAt parseStringtoLimitedBlockAt( String limitedBlockAt ) throws ParseException
 	{
 		String[] parts;
@@ -209,5 +209,5 @@ public class ParserUtil
 		blockAt.getCoordinates().addAll( coordinates );
 
 		return blockAt;
-	}
+	}*/
 }
