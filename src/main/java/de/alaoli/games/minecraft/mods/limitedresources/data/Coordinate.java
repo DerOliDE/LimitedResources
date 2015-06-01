@@ -31,25 +31,12 @@ public class Coordinate
 	{
 		String result;
 		
-		result  = String.valueOf( this.dimId ) + ",";
-		result += String.valueOf( this.x ) + ",";
-		result += String.valueOf( this.y ) + ",";
+		result  = String.valueOf( this.dimId ) + ", ";
+		result += String.valueOf( this.x ) + ", ";
+		result += String.valueOf( this.y ) + ", ";
 		result += String.valueOf( this.z );
 		
 		return result;
-	}
-
-	@Override
-	public boolean equals( Object obj ) 
-	{
-		return super.equals(obj);
-	}
-
-	@Override
-	public int hashCode() 
-	{
-		// TODO Auto-generated method stub
-		return super.hashCode();
 	}
 	
 	/********************************************************************************
