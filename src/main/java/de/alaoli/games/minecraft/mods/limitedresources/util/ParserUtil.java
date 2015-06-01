@@ -15,7 +15,7 @@ import de.alaoli.games.minecraft.mods.limitedresources.data.Coordinate;
 import de.alaoli.games.minecraft.mods.limitedresources.data.LimitedBlock;
 import de.alaoli.games.minecraft.mods.limitedresources.data.LimitedBlockAt;
 
-public class Parser 
+public class ParserUtil 
 {
 	/**
 	 * Parse from String "<mod>:<block>[@<metaid>]" to ItemStack Object
@@ -78,7 +78,7 @@ public class Parser
     	{
     		throw new ParseException( "Can't parse entry '" + limitedBlock + "'.", 0 );
     	}
-    	itemStack = Parser.parseStringToItemStack( parts[ 0 ] );
+    	itemStack = ParserUtil.parseStringToItemStack( parts[ 0 ] );
     	limit = Integer.parseInt( parts[ 1 ] );
  			
     	return new LimitedBlock( itemStack, limit );		
@@ -101,7 +101,7 @@ public class Parser
     		
     		try 
     		{
-				block = Parser.parseStringToLimitedBlock( blockList[ i ] );
+				block = ParserUtil.parseStringToLimitedBlock( blockList[ i ] );
 			} 
     		catch ( ParseException e )
     		{
@@ -168,7 +168,7 @@ public class Parser
 		
 		for( String part : parts )
 		{
-			result.add( Parser.parseStringToCoordinate( part ) );
+			result.add( ParserUtil.parseStringToCoordinate( part ) );
 		}
 		return result;
 	}
@@ -195,7 +195,7 @@ public class Parser
 		{
 			throw new ParseException( "Can't parse entry '" + limitedBlockAt + "'.", 0 );
 		}
-		itemStack = Parser.parseStringToItemStack( parts[ 0 ] );
+		itemStack = ParserUtil.parseStringToItemStack( parts[ 0 ] );
 		block = LimitedResources.getLimitedBlockByItemStack( itemStack );
 		blockAt = new LimitedBlockAt( block );
 		
@@ -204,7 +204,7 @@ public class Parser
 		{
 			throw new ParseException( itemStack.toString() + " doesn't exists (anymore) as Limited Block.", 0 );
 		}
-		coordinates = Parser.parseStringToCoordinateSet( parts[ 1 ] );
+		coordinates = ParserUtil.parseStringToCoordinateSet( parts[ 1 ] );
 		
 		blockAt.getCoordinates().addAll( coordinates );
 

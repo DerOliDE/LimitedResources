@@ -9,7 +9,7 @@ import de.alaoli.games.minecraft.mods.limitedresources.Log;
 import de.alaoli.games.minecraft.mods.limitedresources.data.Coordinate;
 import de.alaoli.games.minecraft.mods.limitedresources.data.LimitedBlock;
 import de.alaoli.games.minecraft.mods.limitedresources.data.LimitedBlockAt;
-import de.alaoli.games.minecraft.mods.limitedresources.util.Parser;
+import de.alaoli.games.minecraft.mods.limitedresources.util.ParserUtil;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTBase;
@@ -84,7 +84,7 @@ public class EntityPlayerWithLimitedBlocks implements IExtendedEntityProperties
 			{
 				try 
 				{
-					this.limitedBlocksAt.add( Parser.parseStringtoLimitedBlockAt( list.getStringTagAt( i ) ) );
+					this.limitedBlocksAt.add( ParserUtil.parseStringtoLimitedBlockAt( list.getStringTagAt( i ) ) );
 				}
 				catch ( ParseException e ) 
 				{

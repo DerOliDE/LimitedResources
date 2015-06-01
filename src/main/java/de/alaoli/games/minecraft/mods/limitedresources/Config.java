@@ -4,7 +4,7 @@ import java.util.Set;
 
 import net.minecraftforge.common.config.Configuration;
 import de.alaoli.games.minecraft.mods.limitedresources.data.LimitedBlock;
-import de.alaoli.games.minecraft.mods.limitedresources.util.Parser;
+import de.alaoli.games.minecraft.mods.limitedresources.util.ParserUtil;
 
 public class Config 
 {
@@ -65,6 +65,6 @@ public class Config
 	 */
 	public static Set<LimitedBlock> createLimitedBlockSet()
 	{
-		return Parser.parseStringListToLimitedBlockSet( Config.LimitedBlocks.blockList );
+		return ParserUtil.parseStringListToLimitedBlockSet( Config.LimitedBlocks.blockList );
 	}
 }
