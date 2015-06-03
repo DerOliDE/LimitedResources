@@ -5,15 +5,10 @@ import java.util.HashSet;
 import java.util.Set;
 
 import net.minecraft.block.Block;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import cpw.mods.fml.common.registry.GameRegistry;
-import de.alaoli.games.minecraft.mods.limitedresources.Config;
-import de.alaoli.games.minecraft.mods.limitedresources.LimitedResources;
 import de.alaoli.games.minecraft.mods.limitedresources.Log;
-import de.alaoli.games.minecraft.mods.limitedresources.data.Coordinate;
 import de.alaoli.games.minecraft.mods.limitedresources.data.LimitedBlock;
-import de.alaoli.games.minecraft.mods.limitedresources.data.LimitedBlockAt;
 
 public class ParserUtil 
 {
@@ -85,6 +80,8 @@ public class ParserUtil
 	}
 	
 	/**
+	 * Parse from String BlockList to <Set>LimitedBlock> 
+	 * 
 	 * @param String[] 
 	 * @return Set<LimitedBlock>
 	 */
