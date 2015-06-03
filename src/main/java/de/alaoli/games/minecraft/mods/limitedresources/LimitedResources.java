@@ -14,7 +14,7 @@ import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import de.alaoli.games.minecraft.mods.limitedresources.data.LimitedBlock;
-import de.alaoli.games.minecraft.mods.limitedresources.events.BlockPlacingEvent;
+import de.alaoli.games.minecraft.mods.limitedresources.event.BlockPlacingEvent;
 import de.alaoli.games.minecraft.mods.limitedresources.proxy.CommonProxy;
 
 

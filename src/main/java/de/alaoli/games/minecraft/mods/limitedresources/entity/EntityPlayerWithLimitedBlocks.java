@@ -1,4 +1,4 @@
-package de.alaoli.games.minecraft.mods.limitedresources.entities;
+package de.alaoli.games.minecraft.mods.limitedresources.entity;
 
 import java.util.HashSet;
 import java.util.Iterator;

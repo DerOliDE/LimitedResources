@@ -1,11 +1,11 @@
-package de.alaoli.games.minecraft.mods.limitedresources.events;
+package de.alaoli.games.minecraft.mods.limitedresources.event;
 
 import java.util.Iterator;
 
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import de.alaoli.games.minecraft.mods.limitedresources.data.Coordinate;
 import de.alaoli.games.minecraft.mods.limitedresources.data.LimitedBlock;
-import de.alaoli.games.minecraft.mods.limitedresources.entities.EntityPlayerWithLimitedBlocks;
+import de.alaoli.games.minecraft.mods.limitedresources.entity.EntityPlayerWithLimitedBlocks;
 import de.alaoli.games.minecraft.mods.limitedresources.LimitedResources;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
