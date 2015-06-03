@@ -5,10 +5,13 @@ import java.util.Iterator;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import de.alaoli.games.minecraft.mods.limitedresources.data.Coordinate;
 import de.alaoli.games.minecraft.mods.limitedresources.data.LimitedBlock;
+import de.alaoli.games.minecraft.mods.limitedresources.data.LimitedBlockAt;
 import de.alaoli.games.minecraft.mods.limitedresources.entity.EntityPlayerWithLimitedBlocks;
 import de.alaoli.games.minecraft.mods.limitedresources.LimitedResources;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.IChatComponent;
 import net.minecraftforge.event.entity.EntityEvent.EntityConstructing;
 import net.minecraftforge.event.world.BlockEvent.MultiPlaceEvent;
 import net.minecraftforge.event.world.BlockEvent.PlaceEvent;
@@ -46,6 +49,27 @@ public class BlockPlacingEvent
 	 * Methods
 	 ********************************************************************************/
 	
+	private IChatComponent messageBlockPlaced( LimitedBlockAt block, boolean isPlaced )
+	{
+		int limit			= block.getLimitedBlock().getLimit();
+		int placed			= block.getCoordinates().size();
+		String blockName	= block.getLimitedBlock().getItemStack().getDisplayName();
+		String message		= "[Limited Resources] ";
+		
+		//Block was placed?
+		if( isPlaced )
+		{
+			message += blockName + " placed. (";
+			message += String.valueOf( placed ) + " of " + String.valueOf( limit );
+			message += ")";
+		}		
+		else
+		{
+			message += "Can't place " + blockName + " limit reached. ";
+		}
+		return new ChatComponentText( message );
+	}
+	
 	/**
 	 * Event canceled if players block place limits is reached
 	 * 
@@ -68,8 +92,7 @@ public class BlockPlacingEvent
 		iter = LimitedResources.limitedBlocks.iterator();
 		itemStackEvent = event.itemInHand;
 		
-		if( ( player != null ) && 
-			( itemStackEvent != null ) )
+		if( itemStackEvent != null )
 		{
 			while( iter.hasNext() )
 			{
@@ -85,13 +108,25 @@ public class BlockPlacingEvent
 				if( ( itemStackEvent.getItem().equals( itemStackLimited.getItem() ) ) &&
 					( itemStackEvent.getItemDamage() == itemStackLimited.getItemDamage() ) )
 				{
-					event.setCanceled( true );
+					//if limited block and entity isn't a player -> cancel placing
+					if( player == null )
+					{
+						event.setCanceled( true );
+					}
 					
 					if( player.canPlaceBlock( block ) )
 					{
 						player.addBlock( block, coordinate );
-						event.setCanceled( false );
+						
+						player.entityPlayer.addChatMessage( this.messageBlockPlaced( player.getLimitedBlockAt( block ), true ) );
 					}
+					else
+					{
+						event.setCanceled( true );
+						
+						player.entityPlayer.addChatMessage( this.messageBlockPlaced( player.getLimitedBlockAt( block ), false ) );
+					}
+					
 				}
 			}
 		}
