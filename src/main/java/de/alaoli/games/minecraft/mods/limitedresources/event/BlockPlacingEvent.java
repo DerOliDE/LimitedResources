@@ -7,11 +7,11 @@ import de.alaoli.games.minecraft.mods.limitedresources.data.Coordinate;
 import de.alaoli.games.minecraft.mods.limitedresources.data.LimitedBlock;
 import de.alaoli.games.minecraft.mods.limitedresources.data.LimitedBlockAt;
 import de.alaoli.games.minecraft.mods.limitedresources.entity.EntityPlayerWithLimitedBlocks;
+import de.alaoli.games.minecraft.mods.limitedresources.Config;
 import de.alaoli.games.minecraft.mods.limitedresources.LimitedResources;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.IChatComponent;
 import net.minecraftforge.event.entity.EntityEvent.EntityConstructing;
 import net.minecraftforge.event.world.BlockEvent.MultiPlaceEvent;
 import net.minecraftforge.event.world.BlockEvent.PlaceEvent;
@@ -44,30 +44,53 @@ public class BlockPlacingEvent
 	{
 		this.placingEvent( event );
 	}
-		
+	
 	/********************************************************************************
 	 * Methods
 	 ********************************************************************************/
 	
-	private IChatComponent messageBlockPlaced( LimitedBlockAt block, boolean isPlaced )
+	/**
+	 * Sends a "limited block placed x of y left" chat message 
+	 * 
+	 * @param EntityPlayer
+	 * @param LimitedBlockAt
+	 */
+	private void messageBlockPlaced( EntityPlayer player, LimitedBlockAt block )
 	{
+		//Only in notification mode "always" 
+		if( Config.Messages.notificationMode != Config.MESSAGES_NOTIFICATION_ALWAYS )
+		{
+			return;
+		}
+		String message;
+		
 		int limit			= block.getLimitedBlock().getLimit();
 		int placed			= block.getCoordinates().size();
 		String blockName	= block.getLimitedBlock().getItemStack().getDisplayName();
-		String message		= "[Limited Resources] ";
+		 
+		message	 = "[Limited Resources] ";
+		message += blockName + " placed. (";
+		message += String.valueOf( placed ) + " of " + String.valueOf( limit );
+		message += ")";
 		
-		//Block was placed?
-		if( isPlaced )
-		{
-			message += blockName + " placed. (";
-			message += String.valueOf( placed ) + " of " + String.valueOf( limit );
-			message += ")";
-		}		
-		else
-		{
-			message += "Can't place " + blockName + " limit reached. ";
-		}
-		return new ChatComponentText( message );
+		player.addChatMessage( new ChatComponentText( message ) );
+	}
+	
+	/**
+	 * Sends a "limit reached" chat message 
+	 * 
+	 * @param EntityPlayer
+	 * @param LimitedBlockAt
+	 */
+	private void messageBlockLimitReached( EntityPlayer player, LimitedBlockAt block )
+	{
+		String message;
+		String blockName = block.getLimitedBlock().getItemStack().getDisplayName();
+		
+		message	 = "[Limited Resources] ";
+		message += "Can't place " + blockName + " limit reached.";
+		
+		player.addChatMessage( new ChatComponentText( message ) );
 	}
 	
 	/**
@@ -91,6 +114,7 @@ public class BlockPlacingEvent
 		player = EntityPlayerWithLimitedBlocks.get( event.player );
 		iter = LimitedResources.limitedBlocks.iterator();
 		itemStackEvent = event.itemInHand;
+
 		
 		if( itemStackEvent != null )
 		{
@@ -118,13 +142,13 @@ public class BlockPlacingEvent
 					{
 						player.addBlock( block, coordinate );
 						
-						player.entityPlayer.addChatMessage( this.messageBlockPlaced( player.getLimitedBlockAt( block ), true ) );
+						this.messageBlockPlaced( player.entityPlayer, player.getLimitedBlockAt( block ) );
 					}
 					else
 					{
 						event.setCanceled( true );
 						
-						player.entityPlayer.addChatMessage( this.messageBlockPlaced( player.getLimitedBlockAt( block ), false ) );
+						this.messageBlockLimitReached( player.entityPlayer, player.getLimitedBlockAt( block ) );
 					}
 					
 				}
