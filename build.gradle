@@ -21,6 +21,9 @@ version = "1.7.10-0.10.0"
 group= "de.alaoli.games.minecraft.mods.limitedresources" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "limitedresources"
 
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
+
 minecraft {
     version = "1.7.10-10.13.3.1408-1.7.10"
     runDir = "eclipse"
