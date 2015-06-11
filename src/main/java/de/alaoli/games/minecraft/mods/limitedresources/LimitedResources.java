@@ -13,6 +13,8 @@ import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import cpw.mods.fml.common.event.FMLServerStartingEvent;
+import de.alaoli.games.minecraft.mods.limitedresources.command.LimitedResourcesCommand;
 import de.alaoli.games.minecraft.mods.limitedresources.data.LimitedBlock;
 import de.alaoli.games.minecraft.mods.limitedresources.event.BlockPlacingEvent;
 import de.alaoli.games.minecraft.mods.limitedresources.proxy.CommonProxy;
@@ -71,6 +73,15 @@ public class LimitedResources
     	LimitedResources.limitedBlocks.addAll( Config.createLimitedBlockSet() );
     }
 
+    @EventHandler
+    public void serverInit( FMLServerStartingEvent event )
+    {
+		if( Config.LimitedBlocks.isEnabled )
+		{
+			event.registerServerCommand( new LimitedResourcesCommand( Config.Commands.shortAlias ) );
+		}
+    }
+    
 	/********************************************************************************
 	 * Methods - Getter / Setter
 	 ********************************************************************************/    
