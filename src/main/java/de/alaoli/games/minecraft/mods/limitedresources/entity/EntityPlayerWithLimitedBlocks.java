@@ -90,7 +90,7 @@ public class EntityPlayerWithLimitedBlocks implements IExtendedEntityProperties
 		}
 		return null;
 	}
-	
+
 	/********************************************************************************
 	 * Methods 
 	 ********************************************************************************/

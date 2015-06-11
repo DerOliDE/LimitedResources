@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 0.10.0
+- Added placing ChatMessage
+- Added ChatCommands
+
 ## Version 0.9.0
 - First Github upload
 - Rework EntityPlayerWithLimitedBlocks NBT Data Structure
