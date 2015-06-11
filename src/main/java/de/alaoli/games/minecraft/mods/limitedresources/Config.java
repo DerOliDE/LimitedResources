@@ -26,6 +26,11 @@ public class Config
 		public static String[] blockList;
 	}
 	
+	public static class Commands
+	{
+		public static String shortAlias;
+	}
+	
 	/********************************************************************************
 	 * Methods
 	 ********************************************************************************/
@@ -39,6 +44,7 @@ public class Config
 	{
     	configFile.load();
     	
+    	//Limited Blocks
     	Config.LimitedBlocks.isEnabled = configFile.getBoolean( 
 			"isEnabled", 
 			"limitedBlocks", 
@@ -50,6 +56,14 @@ public class Config
 			"limitedBlocks", 
 			new String[]{}, 
 			"Limited Blocks <mod>:<block>[@<metaid>]=<limit>. Example minecraft:stone=2 allows 2 Stone placed per Player."
+		);
+    	
+    	//Commands
+    	Config.Commands.shortAlias = configFile.getString( 
+			"shortAlias", 
+			"commands", 
+			"lr", 
+			"Change command alias in case of an conflict with other mod commands."
 		);
     	
     	if( configFile.hasChanged() == true )
