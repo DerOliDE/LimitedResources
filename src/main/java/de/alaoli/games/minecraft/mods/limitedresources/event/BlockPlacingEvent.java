@@ -13,6 +13,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ChatComponentText;
 import net.minecraftforge.event.entity.EntityEvent.EntityConstructing;
+import net.minecraftforge.event.world.BlockEvent.BreakEvent;
 import net.minecraftforge.event.world.BlockEvent.MultiPlaceEvent;
 import net.minecraftforge.event.world.BlockEvent.PlaceEvent;
 
@@ -44,6 +45,36 @@ public class BlockPlacingEvent
 	{
 		this.placingEvent( event );
 	}
+	
+	
+	@SubscribeEvent
+	public void onBlockBreakEvent( BreakEvent event )
+	{
+		LimitedBlock block;
+		ItemStack itemStackLimited;
+		
+		Iterator<LimitedBlock> iter = LimitedResources.limitedBlocks.iterator();
+		ItemStack itemStackEvent = new ItemStack( event.block, 1, event.blockMetadata );
+		EntityPlayerWithLimitedBlocks player = EntityPlayerWithLimitedBlocks.get( event.getPlayer() ); 
+		
+		if( itemStackEvent != null )
+		{
+			while( iter.hasNext() )
+			{
+				block = iter.next();
+				itemStackLimited = block.getItemStack();
+				
+				if( ( itemStackEvent.getItem().equals( itemStackLimited.getItem() ) ) &&
+					( itemStackEvent.getItemDamage() == itemStackLimited.getItemDamage() ) )
+				{
+					/**
+					 * @TODO Only Owner can remove his own limited blocks
+					 */
+					player.removeCoordinate( block, event.getPlayer().dimension, event.x, event.y, event.z );
+				}
+			}
+		}
+	}	
 	
 	/********************************************************************************
 	 * Methods

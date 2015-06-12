@@ -74,6 +74,12 @@ public class EntityPlayerWithLimitedBlocks implements IExtendedEntityProperties
 	 * Methods - Getter / Setter
 	 ********************************************************************************/
 	
+	/**
+	 * Returns a limited block with coordinates if exists
+	 * 
+	 * @param LimitedBlock
+	 * @return LimitedBlockAt|null
+	 */
 	public LimitedBlockAt getLimitedBlockAt( LimitedBlock block )
 	{
 		LimitedBlockAt limitedBlockAt;
@@ -201,6 +207,44 @@ public class EntityPlayerWithLimitedBlocks implements IExtendedEntityProperties
 		{
 			limitedBlockAt.getCoordinates().add( coordinate );
 		}
+	}
+	
+	/**
+	 * Remove a coordinate from an limited block
+	 * 
+	 * @param LimitedBlock
+	 * @param int
+	 * @param int
+	 * @param int
+	 * @param int
+	 * @return boolean
+	 */
+	public boolean removeCoordinate( LimitedBlock block, int dimId, int x, int y, int z )
+	{
+		LimitedBlockAt blockAt = this.getLimitedBlockAt( block );
+		
+		if( blockAt == null )
+		{
+			return false;
+		}
+		Coordinate coordinate;
+		Iterator<Coordinate> iter = blockAt.getCoordinates().iterator();	
+		
+		while( iter.hasNext() )
+		{
+			coordinate = iter.next();
+			
+			if( ( coordinate.getDimId() == dimId ) &&
+				( coordinate.getX() == x ) &&
+				( coordinate.getY() == y ) &&
+				( coordinate.getZ() == z ) )
+			{
+				blockAt.getCoordinates().remove( coordinate );
+				
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	/********************************************************************************
