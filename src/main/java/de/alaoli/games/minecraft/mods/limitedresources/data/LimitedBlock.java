@@ -26,13 +26,16 @@ public class LimitedBlock
 	@Override
 	public String toString()
 	{
-		String result = GameRegistry.findUniqueIdentifierFor( this.itemStack.getItem() ).toString();
+		StringBuilder result = new StringBuilder(); 
+				
+		result.append( GameRegistry.findUniqueIdentifierFor( this.itemStack.getItem() ).toString() );
 				
 		if( this.itemStack.getItemDamage() > 0 )
 		{
-			result += "@" + this.itemStack.getItemDamage(); 
+			result.append( "@" );
+			result.append( this.itemStack.getItemDamage() );
 		}	
-		return result;
+		return result.toString();
 	}
 
 	@Override
@@ -44,19 +47,14 @@ public class LimitedBlock
 	@Override
 	public boolean equals( Object obj ) 
 	{
-		boolean result = false;
-	
-		if( obj instanceof LimitedBlock )
-		{
-			ItemStack itemStack = ((LimitedBlock)obj).getItemStack();
+		ItemStack itemStack = ((LimitedBlock)obj).getItemStack();
 			
-			if( ( this.itemStack.getItem().equals( itemStack.getItem() ) ) &&
-				( this.itemStack.getItemDamage() == itemStack.getItemDamage() ) )
-			{
-				result = true;
-			}
+		if( ( this.itemStack.getItem().equals( itemStack.getItem() ) ) &&
+			( this.itemStack.getItemDamage() == itemStack.getItemDamage() ) )
+		{
+			return true;
 		}
-		return result;
+		return false;
 	}
 	
 	/********************************************************************************
