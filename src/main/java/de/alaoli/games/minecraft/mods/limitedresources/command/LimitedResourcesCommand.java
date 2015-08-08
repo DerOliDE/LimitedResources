@@ -61,15 +61,20 @@ public class LimitedResourcesCommand implements ICommand
 	@Override
 	public String getCommandUsage( ICommandSender sender ) 
 	{
-		String result;
+		StringBuilder result = new StringBuilder();
 		
-		result  = "/" + this.aliases.get( 0 ) + " or /";
-		result += this.aliases.get( 1 ) + " ";
-		result += SUBCOMMAND_HELP + " | ";
-		result += SUBCOMMAND_LIMITS + " | ";
-		result += SUBCOMMAND_WHERE;
-				
-		return result;
+		result.append( "/" );
+		result.append( this.aliases.get( 0 ) );
+		result.append( " or /" );
+		result.append( this.aliases.get( 1 ) );
+		result.append( " " );
+		result.append( SUBCOMMAND_HELP );
+		result.append( " | " );
+		result.append( SUBCOMMAND_LIMITS );
+		result.append( " | " );
+		result.append( SUBCOMMAND_WHERE );
+			
+		return result.toString();
 	}
 
 	@Override
@@ -198,7 +203,7 @@ public class LimitedResourcesCommand implements ICommand
 	 */
 	private void processCommandLimits( ICommandSender sender, String[] args )
 	{
-		String message;
+		StringBuilder message;
 		LimitedBlock block;
 		LimitedBlockAt blockAt;
 		
@@ -212,10 +217,13 @@ public class LimitedResourcesCommand implements ICommand
 		while( iter.hasNext() )
 		{
 			block = iter.next();
+			message = new StringBuilder();
 			
-			message  = " - ";
-			message += String.valueOf( block.getLimit() ) + "x ";
-			message += block.getItemStack().getDisplayName() + ".";
+			message.append( " - " );
+			message.append( block.getLimit() );
+			message.append( "x " );
+			message.append( block.getItemStack().getDisplayName() );
+			message.append( "." );
 			
 			//Player with limited blocks
 			if( player != null )
@@ -225,12 +233,14 @@ public class LimitedResourcesCommand implements ICommand
 				//has placed limited block
 				if( blockAt != null )
 				{
-					message += " " + String.valueOf( blockAt.getCoordinates().size() );
-					message += " of ";
-					message += String.valueOf( block.getLimit() ) + " placed.";
+					message.append( " " );
+					message.append( blockAt.getCoordinates().size() );
+					message.append( " of " );
+					message.append( block.getLimit() );
+					message.append( " placed." );
 				}
 			}
-			sender.addChatMessage( new ChatComponentText( message ) );
+			sender.addChatMessage( new ChatComponentText( message.toString() ) );
 		}
 		
 	}
