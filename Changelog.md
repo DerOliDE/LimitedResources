@@ -1,5 +1,8 @@
 # Changelog
 
+## Version 1.0.0
+- Added Limited Block Owners
+
 ## Version 0.10.0
 - Added placing ChatMessage
 - Added ChatCommands
