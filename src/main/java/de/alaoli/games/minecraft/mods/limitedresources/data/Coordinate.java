@@ -29,14 +29,17 @@ public class Coordinate
 	@Override
 	public String toString() 
 	{
-		String result;
+		StringBuilder result = new StringBuilder();
 		
-		result  = String.valueOf( this.dimId ) + ", ";
-		result += String.valueOf( this.x ) + ", ";
-		result += String.valueOf( this.y ) + ", ";
-		result += String.valueOf( this.z );
+		result.append( this.dimId );
+		result.append( ", " );
+		result.append( this.x );
+		result.append( ", " );
+		result.append( this.y );
+		result.append( ", " );
+		result.append( this.z );
 		
-		return result;
+		return result.toString();
 	}
 	
 	@Override
@@ -65,7 +68,7 @@ public class Coordinate
 	@Override
 	public int hashCode() 
 	{
-		int hashCode = 8343;
+		int hashCode = 8343; //Rnd Init
 		
 		hashCode += this.dimId;
 		hashCode += this.x;
