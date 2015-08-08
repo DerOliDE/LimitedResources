@@ -7,6 +7,7 @@ import de.alaoli.games.minecraft.mods.limitedresources.data.Coordinate;
 import de.alaoli.games.minecraft.mods.limitedresources.data.LimitedBlock;
 import de.alaoli.games.minecraft.mods.limitedresources.data.LimitedBlockAt;
 import de.alaoli.games.minecraft.mods.limitedresources.entity.EntityPlayerWithLimitedBlocks;
+import de.alaoli.games.minecraft.mods.limitedresources.world.LimitedBlockOwners;
 import de.alaoli.games.minecraft.mods.limitedresources.Config;
 import de.alaoli.games.minecraft.mods.limitedresources.LimitedResources;
 import net.minecraft.entity.player.EntityPlayer;
@@ -16,12 +17,25 @@ import net.minecraftforge.event.entity.EntityEvent.EntityConstructing;
 import net.minecraftforge.event.world.BlockEvent.BreakEvent;
 import net.minecraftforge.event.world.BlockEvent.MultiPlaceEvent;
 import net.minecraftforge.event.world.BlockEvent.PlaceEvent;
+import net.minecraftforge.event.world.WorldEvent;
 
 public class BlockPlacingEvent 
-{	
+{
+	/********************************************************************************
+	 * Attributes
+	 ********************************************************************************/
+	
+	private LimitedBlockOwners owners;
+	
 	/********************************************************************************
 	 * Methods - Forge Events
 	 ********************************************************************************/
+	
+	@SubscribeEvent
+	public void onWorldLoad( WorldEvent.Load event )
+	{
+		this.owners = LimitedBlockOwners.get( event.world );
+	}
 	
 	@SubscribeEvent
     public void onEntityConstructing( EntityConstructing event )
