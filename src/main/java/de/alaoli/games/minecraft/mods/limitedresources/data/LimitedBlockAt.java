@@ -33,24 +33,24 @@ public class LimitedBlockAt
 	@Override
 	public String toString() 
 	{
-		String result;
-		Iterator<Coordinate> iter;
 		Coordinate coordinate;
+		Iterator<Coordinate> iter = this.coordinates.iterator();
+		StringBuilder result = new StringBuilder();
 		
-		result = this.block.toString() + "|";
-		iter = this.coordinates.iterator();
+		result.append( this.block.toString() );
+		result.append( "|" );
 		
 		while( iter.hasNext() )
 		{
-			coordinate = iter.next(); 
-			result += coordinate.toString();
+			coordinate = iter.next();
+			result.append( coordinate.toString() );
 			
 			if( iter.hasNext() )
 			{
-				result += ";";
+				result.append( ";" );
 			}
 		}		
-		return result;
+		return result.toString();
 	}	
 	
 	/********************************************************************************
