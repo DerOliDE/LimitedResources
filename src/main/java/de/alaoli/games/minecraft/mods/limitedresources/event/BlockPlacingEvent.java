@@ -67,6 +67,10 @@ public class BlockPlacingEvent
 	@SubscribeEvent
 	public void onBlockBreakEvent( BreakEvent event )
 	{
+		if( event.isCanceled() )
+		{
+			return;
+		}
 		LimitedBlock block;
 		ItemStack itemStackLimited;
 		
@@ -120,18 +124,17 @@ public class BlockPlacingEvent
 		{
 			return;
 		}
-		String message;
+		StringBuilder message	= new StringBuilder();
 		
-		int limit			= block.getLimitedBlock().getLimit();
-		int placed			= block.getCoordinates().size();
-		String blockName	= block.getLimitedBlock().getItemStack().getDisplayName();
-		 
-		message	 = "[Limited Resources] ";
-		message += blockName + " placed. (";
-		message += String.valueOf( placed ) + " of " + String.valueOf( limit );
-		message += ")";
-		
-		player.addChatMessage( new ChatComponentText( message ) );
+		message.append( "[Limited Resources] " );
+		message.append( block.getLimitedBlock().getItemStack().getDisplayName() );
+		message.append( " placed. (" );
+		message.append( block.getCoordinates().size() );
+		message.append( " of " );
+		message.append( block.getLimitedBlock().getLimit() );
+		message.append( ")" );
+				
+		player.addChatMessage( new ChatComponentText( message.toString() ) );
 	}
 	
 	/**
@@ -142,13 +145,14 @@ public class BlockPlacingEvent
 	 */
 	private void messageBlockLimitReached( EntityPlayer player, LimitedBlockAt block )
 	{
-		String message;
-		String blockName = block.getLimitedBlock().getItemStack().getDisplayName();
+		StringBuilder message = new StringBuilder();
 		
-		message	 = "[Limited Resources] ";
-		message += "Can't place " + blockName + " limit reached.";
+		message.append( "[Limited Resources] " );
+		message.append( "Can't place " );
+		message.append( block.getLimitedBlock().getItemStack().getDisplayName() );
+		message.append( " limit reached." );
 		
-		player.addChatMessage( new ChatComponentText( message ) );
+		player.addChatMessage( new ChatComponentText( message.toString() ) );
 	}
 	
 	/**
