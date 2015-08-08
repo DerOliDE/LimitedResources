@@ -34,7 +34,10 @@ public class BlockPlacingEvent
 	@SubscribeEvent
 	public void onWorldLoad( WorldEvent.Load event )
 	{
-		this.owners = LimitedBlockOwners.get( event.world );
+		if( this.owners == null )
+		{
+			this.owners = LimitedBlockOwners.get( event.world );
+		}
 	}
 	
 	@SubscribeEvent
@@ -70,7 +73,7 @@ public class BlockPlacingEvent
 		Iterator<LimitedBlock> iter = LimitedResources.limitedBlocks.iterator();
 		ItemStack itemStackEvent = new ItemStack( event.block, 1, event.blockMetadata );
 		EntityPlayerWithLimitedBlocks player = EntityPlayerWithLimitedBlocks.get( event.getPlayer() ); 
-		
+		Coordinate coordinate = new Coordinate( event.getPlayer().dimension, event.x, event.y, event.z );
 		if( itemStackEvent != null )
 		{
 			while( iter.hasNext() )
@@ -81,10 +84,20 @@ public class BlockPlacingEvent
 				if( ( itemStackEvent.getItem().equals( itemStackLimited.getItem() ) ) &&
 					( itemStackEvent.getItemDamage() == itemStackLimited.getItemDamage() ) )
 				{
-					/**
-					 * @TODO Only Owner can remove his own limited blocks
-					 */
-					player.removeCoordinate( block, event.getPlayer().dimension, event.x, event.y, event.z );
+					//Player == block owner
+					String uuid = this.owners.getPlayerUuidAt( coordinate );
+					
+					if( ( uuid != null ) && 
+						( uuid.equals( event.getPlayer().getUniqueID().toString() ) ) )
+					{
+						player.removeCoordinate( block, event.getPlayer().dimension, event.x, event.y, event.z );
+					}
+					else
+					{
+						event.getPlayer().addChatMessage( new ChatComponentText( "You are not the owner of this block." ) );
+						event.setCanceled( true );
+					}
+					
 				}
 			}
 		}
@@ -186,6 +199,7 @@ public class BlockPlacingEvent
 					if( player.canPlaceBlock( block ) )
 					{
 						player.addBlock( block, coordinate );
+						this.owners.add( coordinate, player.entityPlayer );
 						
 						this.messageBlockPlaced( player.entityPlayer, player.getLimitedBlockAt( block ) );
 					}

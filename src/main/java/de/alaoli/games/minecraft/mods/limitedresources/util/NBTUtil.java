@@ -1,8 +1,11 @@
 package de.alaoli.games.minecraft.mods.limitedresources.util;
 
 import java.text.ParseException;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import de.alaoli.games.minecraft.mods.limitedresources.LimitedResources;
@@ -26,6 +29,9 @@ public class NBTUtil
 	
 	public static final String NBT_LIMITEDBLOCKAT_NAME			= "NAME";
 	public static final String NBT_LIMITEDBLOCKAT_COORDINATES	= "COORDINATES";
+	
+	public static final String NBT_LIMITEDBLOCKOWNER_UUID		= "UUID";
+	public static final String NBT_LIMITEDBLOCKOWNER_COORDINATE	= "COORDINATE";
 	
 	/********************************************************************************
 	 * Methods - Data to NBT
@@ -108,6 +114,43 @@ public class NBTUtil
 		return list;
 	}
 	
+	/**
+	 * Puts Coordinate and the UUID of the Block Owner in an NBTTagCompound
+	 * 
+	 * @param Coordinate
+	 * @param String
+	 * @return NBTTagCompound
+	 */
+	public static NBTTagCompound toLimitedBlockOwnerTagCompound( Coordinate coordinate, String uuid )
+	{
+		NBTTagCompound comp = new NBTTagCompound();
+		
+		comp.setString( NBT_LIMITEDBLOCKOWNER_UUID, uuid );
+		comp.setTag( NBT_LIMITEDBLOCKOWNER_COORDINATE, NBTUtil.toCoordinateTagCompound( coordinate ) );
+		
+		return comp;
+	}
+	
+	/**
+	 * Puts Coordinate->Owner Map into an NBTTagList
+	 * 
+	 * @param Map<Coordinate, String>
+	 * @return NBTTagList
+	 */
+	public static NBTTagList toLimitedBlockOwnerTagList( Map<Coordinate, String> owners )
+	{
+		Entry entry;
+		NBTTagList list = new NBTTagList();
+		Iterator<Entry<Coordinate, String>> iter = owners.entrySet().iterator();
+		
+		while( iter.hasNext() )
+		{
+			entry = iter.next();
+			
+			list.appendTag( NBTUtil.toLimitedBlockOwnerTagCompound( (Coordinate)entry.getKey(), (String)entry.getValue() ));
+		}
+		return list;
+	}
 	/********************************************************************************
 	 * Methods - NBT to Data
 	 ********************************************************************************/
@@ -173,7 +216,7 @@ public class NBTUtil
 	}
 	
 	/**
-	 * Gets LimitedBlockAt Set out of an NBTTagLost
+	 * Gets LimitedBlockAt Set out of an NBTTagList
 	 * 
 	 * @param NBTTagList
 	 * @return Set<LimitedBlockAt>
@@ -198,5 +241,18 @@ public class NBTUtil
 			}
 		}
 		return blocks;
+	}
+	
+	/**
+	 * Gets Coordinate->Owner Map out of an NBTTagList
+	 * @param NBTTagList
+	 * @return Map<Coordinate, String>
+	 */
+	public static Map<Coordinate, String> toLimitedBlockOwnerMap( NBTTagList list )
+	{
+		Map<Coordinate, String> owners = new HashMap<Coordinate, String>();
+		
+		
+		return owners;
 	}
 }

@@ -39,6 +39,42 @@ public class Coordinate
 		return result;
 	}
 	
+	@Override
+	public boolean equals( Object obj ) 
+	{
+		if( this == obj ) 
+		{
+			return true;
+		}
+		if( obj == null )
+		{
+			return false;
+		}
+		Coordinate coordinate = (Coordinate) obj;
+		
+		if( ( coordinate.getDimId() == this.dimId ) &&
+			( coordinate.getX() == this.x ) &&
+			( coordinate.getY() == this.y ) &&
+			( coordinate.getZ() == this.z ) )
+		{
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public int hashCode() 
+	{
+		int hashCode = 8343;
+		
+		hashCode += this.dimId;
+		hashCode += this.x;
+		hashCode += this.y;
+		hashCode += this.z;
+		
+		return hashCode;
+	}
+	
 	/********************************************************************************
 	 * Methodes - Getter / Setter
 	 ********************************************************************************/

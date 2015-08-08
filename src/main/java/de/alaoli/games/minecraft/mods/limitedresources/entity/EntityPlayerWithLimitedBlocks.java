@@ -24,7 +24,6 @@ public class EntityPlayerWithLimitedBlocks implements IExtendedEntityProperties
 	 ********************************************************************************/
 	
 	public final static String EXT_PROP_NAME = "de.alaoli.games.minecraft.mods.limitedresources.entity.EntityPlayerWithLimitedBlocks";
-	
 	public final static String NBT_LIMITEDBLOCKSAT_SET = "LIMITEDBLOCKSAT_SET";
 	
 	/********************************************************************************
