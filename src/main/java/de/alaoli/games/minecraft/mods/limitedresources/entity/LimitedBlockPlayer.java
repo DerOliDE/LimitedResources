@@ -36,15 +36,19 @@ public class LimitedBlockPlayer extends Observable implements IExtendedEntityPro
 	 * Attributes
 	 ********************************************************************************/
 
+	/**
+	 * References to Player
+	 */
 	public EntityPlayer entityPlayer;
-	
-	//private Set<LimitedBlockAt> limitedBlocksAt;
-	
+		
 	/**
 	 * Mapping LimitedBlock -> Coordinates
 	 */
 	private Map<LimitedBlock, Set<Coordinate>> blocks;
 
+	/**
+	 * Last Coordinate change
+	 */
 	private Coordinate lastChange;
 	
 	/********************************************************************************
@@ -212,6 +216,12 @@ public class LimitedBlockPlayer extends Observable implements IExtendedEntityPro
 		}
 	}
 
+	/**
+	 * Checks if block limit is reached
+	 * 
+	 * @param LimitedBlock
+	 * @return boolean
+	 */
 	public boolean canPlaceBlock( LimitedBlock block )
 	{
 		//If Block is not listed
