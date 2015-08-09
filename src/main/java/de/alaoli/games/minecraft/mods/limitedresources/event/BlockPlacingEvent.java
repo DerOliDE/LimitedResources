@@ -34,16 +34,11 @@ public class BlockPlacingEvent
 	 ********************************************************************************/
 	
 	private LimitedBlockOwners owners;
-	//private Map<UUID, LimitedBlockPlayer> players;
 	
 	/********************************************************************************
 	 * Methods - Forge Events
 	 ********************************************************************************/
-	
-	/**
-	 * 
-	 * @param WorldEvent
-	 */
+
 	@SubscribeEvent( priority=EventPriority.HIGHEST )
 	public void onWorldLoad( WorldEvent.Load event )
 	{
@@ -51,12 +46,6 @@ public class BlockPlacingEvent
 		{
 			this.owners = LimitedBlockOwners.get( event.world );
 		}
-		
-		/*
-		if( this.players == null )
-		{
-			this.players = new HashMap<UUID, LimitedBlockPlayer>();
-		}*/
 	}
 
 	@SubscribeEvent( priority=EventPriority.HIGHEST )
@@ -69,30 +58,7 @@ public class BlockPlacingEvent
     		LimitedBlockPlayer.register( (EntityPlayer) event.entity );
     	}
     }
-/*
-	@SubscribeEvent
-	public void onPlayerLoggedIn( PlayerLoggedInEvent event )
-	{
-		LimitedBlockPlayer player = LimitedBlockPlayer.get( event.player );
-		
-		if( player == null )
-		{
-			LimitedBlockPlayer.register( (EntityPlayer) event.player );
-			player = LimitedBlockPlayer.get( event.player );
-		}
-		this.players.put( player.entityPlayer.getUniqueID(), player );
-		player.addObserver( this.owners );
-	}
-	
-	@SubscribeEvent
-	public void onPlayerLoggedout( PlayerLoggedOutEvent event )
-	{
-		LimitedBlockPlayer player = this.players.get( event.player.getUniqueID() );
-		
-		player.deleteObservers();
-		this.players.remove( player.entityPlayer.getUniqueID() );
-	}
-	*/
+
 	@SubscribeEvent
 	public void onPlaceEvent( PlaceEvent event )
 	{
@@ -109,48 +75,39 @@ public class BlockPlacingEvent
 	@SubscribeEvent
 	public void onBlockBreakEvent( BreakEvent event )
 	{
-		if( event.isCanceled() )
+		LimitedBlockPlayer player = LimitedBlockPlayer.get( event.getPlayer() );
+		
+		if( ( event.isCanceled() ) || 
+			( player == null ) )
 		{
 			return;
 		}
-		LimitedBlock block;
-		ItemStack itemStackLimited;
-		
-		Iterator<LimitedBlock> iter = LimitedResources.limitedBlocks.iterator();
-		ItemStack itemStackEvent = new ItemStack( event.block, 1, event.blockMetadata );
-		LimitedBlockPlayer player = LimitedBlockPlayer.get( event.getPlayer() ); 
+		ItemStack itemStack = new ItemStack( event.block, 1, event.blockMetadata );
 		Coordinate coordinate = new Coordinate( event.getPlayer().dimension, event.x, event.y, event.z );
 		
 		player.addObserver( this.owners );
 		
-		if( itemStackEvent != null )
+		for( LimitedBlock block : LimitedResources.limitedBlocks )
 		{
-			while( iter.hasNext() )
+			if( block.isLimitedBlock( itemStack ) )
 			{
-				block = iter.next();
-				itemStackLimited = block.getItemStack();
-				
-				if( ( itemStackEvent.getItem().equals( itemStackLimited.getItem() ) ) &&
-					( itemStackEvent.getItemDamage() == itemStackLimited.getItemDamage() ) )
+				//Coordinate has Owner
+				if( this.owners.hasOwner( coordinate ) )
 				{
-					//Player == block owner
-					UUID uuid = this.owners.getPlayerUuidAt( coordinate );
-					
-			//		if( ( uuid != null ) && 
-			//			( uuid.equals( event.getPlayer().getUniqueID().toString() ) ) )
-			//		{
+					//Is Player = Owner
+					if( this.owners.isOwner( coordinate, player.entityPlayer ) )
+					{
 						player.remove( coordinate );
-			//		}
-			//		else
-			//		{
-			//			event.getPlayer().addChatMessage( new ChatComponentText( "You are not the owner of this block." ) );
-			//			event.setCanceled( true );
-			//		}
-					
+					}
+					else
+					{
+						event.getPlayer().addChatMessage( new ChatComponentText( "You are not the owner of this block." ) );
+						event.setCanceled( true );
+					}
 				}
 			}
 		}
-		player.deleteObservers();
+		player.deleteObservers();		
 	}	
 	
 	/********************************************************************************
@@ -208,58 +165,39 @@ public class BlockPlacingEvent
 	 */
 	private void placingEvent( PlaceEvent event )
 	{
-		if( event.isCanceled() ) 
+		LimitedBlockPlayer player = LimitedBlockPlayer.get( event.player );
+		
+		if( ( event.isCanceled() ) || 
+			( player == null ) ) 
 		{
 			return;
 		}
-		LimitedBlock block;
-		Coordinate coordinate;
-		ItemStack itemStackEvent;
-		ItemStack itemStackLimited;
-		Iterator<LimitedBlock> iter;
-		LimitedBlockPlayer player;
-		
-		player = LimitedBlockPlayer.get( event.player );
-		iter = LimitedResources.limitedBlocks.iterator();
-		itemStackEvent = event.itemInHand;
-
+		ItemStack itemStack = event.itemInHand;
+		Coordinate coordinate 	= new Coordinate( 
+			event.blockSnapshot.dimId, 
+			event.blockSnapshot.x,
+			event.blockSnapshot.y,
+			event.blockSnapshot.z
+		);
 		player.addObserver( this.owners );
 		
-		if( itemStackEvent != null )
+		for( LimitedBlock block : LimitedResources.limitedBlocks )
 		{
-			while( iter.hasNext() )
+			if( block.isLimitedBlock( itemStack ) )
 			{
-				block = iter.next();
-				itemStackLimited = block.getItemStack();
-				coordinate 	= new Coordinate( 
-					event.blockSnapshot.dimId, 
-					event.blockSnapshot.x,
-					event.blockSnapshot.y,
-					event.blockSnapshot.z
-				);
-				
-				if( ( itemStackEvent.getItem().equals( itemStackLimited.getItem() ) ) &&
-					( itemStackEvent.getItemDamage() == itemStackLimited.getItemDamage() ) )
+				//Check if block limit is reached
+				if( player.canPlaceBlock( block ) )
 				{
-					//if limited block and entity isn't a player -> cancel placing
-					if( player == null )
-					{
-						event.setCanceled( true );
-					}
+					player.add( block, coordinate );
 					
-					if( player.canPlaceBlock( block ) )
-					{
-						player.add( block, coordinate );
-						
-						this.messageBlockPlaced( player, block );
-					}
-					else
-					{
-						event.setCanceled( true );
-						
-						this.messageBlockLimitReached( player, block );
-					}
+					this.messageBlockPlaced( player, block );
 				}
+				else
+				{
+					event.setCanceled( true );
+					
+					this.messageBlockLimitReached( player, block );
+				}				
 			}
 		}
 		player.deleteObservers();
