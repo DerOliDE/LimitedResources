@@ -93,18 +93,12 @@ public class LimitedResources
      */
     public static LimitedBlock getLimitedBlockByItemStack( ItemStack itemStack )
     {
-    	LimitedBlock block;
-    	Iterator<LimitedBlock> iter = LimitedResources.limitedBlocks.iterator();
-    	
-    	while( iter.hasNext() )
+    	for( LimitedBlock block : LimitedResources.limitedBlocks )
     	{
-    		block = iter.next();
-    		
-			if( ( block.getItemStack().getItem().equals( itemStack.getItem() ) ) && 
-				( block.getItemStack().getItemDamage() == itemStack.getItemDamage() ) )
-			{
-				return block;
-			}
+    		if( block.isLimitedBlock( itemStack ) )
+    		{
+    			return block;
+    		}
     	}
 		return null;
     }
