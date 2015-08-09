@@ -83,6 +83,10 @@ public class LimitedBlock
 	 */
 	public boolean isLimitedBlock( ItemStack itemStackA )
 	{
+		if( itemStackA == null )
+		{
+			return false;
+		}
 		ItemStack itemStackB = this.getItemStack();
 		
 		if( ( itemStackA.getItem().equals( itemStackB.getItem() ) ) &&
