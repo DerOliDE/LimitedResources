@@ -70,4 +70,29 @@ public class LimitedBlock
 	{
 		return this.limit;
 	}
+	
+	/********************************************************************************
+	 * Methodes
+	 ********************************************************************************/	
+	
+	/**
+	 * Checks if block is an limited block
+	 * 
+	 * @param ItemStack
+	 * @return boolean
+	 */
+	public boolean isLimitedBlock( ItemStack itemStackA )
+	{
+		ItemStack itemStackB = this.getItemStack();
+		
+		if( ( itemStackA.getItem().equals( itemStackB.getItem() ) ) &&
+			( itemStackA.getItemDamage() == itemStackB.getItemDamage() ) )
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
 }

@@ -7,11 +7,13 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.UUID;
 
 import de.alaoli.games.minecraft.mods.limitedresources.LimitedResources;
 import de.alaoli.games.minecraft.mods.limitedresources.Log;
 import de.alaoli.games.minecraft.mods.limitedresources.data.Coordinate;
-import de.alaoli.games.minecraft.mods.limitedresources.data.LimitedBlockAt;
+import de.alaoli.games.minecraft.mods.limitedresources.data.LimitedBlock;
+//import de.alaoli.games.minecraft.mods.limitedresources.data.LimitedBlockAt;
 import net.minecraft.nbt.NBTException;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -27,8 +29,8 @@ public class NBTUtil
 	public static final String NBT_COORDINATE_Y		= "Y";
 	public static final String NBT_COORDINATE_Z		= "Z";
 	
-	public static final String NBT_LIMITEDBLOCKAT_NAME			= "NAME";
-	public static final String NBT_LIMITEDBLOCKAT_COORDINATES	= "COORDINATES";
+	public static final String NBT_LIMITEDBLOCK_NAME		= "NAME";
+	public static final String NBT_LIMITEDBLOCK_COORDINATES	= "COORDINATES";
 	
 	public static final String NBT_LIMITEDBLOCKOWNER_UUID		= "UUID";
 	public static final String NBT_LIMITEDBLOCKOWNER_COORDINATE	= "COORDINATE";
@@ -64,52 +66,44 @@ public class NBTUtil
 	public static NBTTagList toCoordinateTagList( Set<Coordinate> coordinates )
 	{
 		NBTTagList list = new NBTTagList();
-		Iterator<Coordinate> iter = coordinates.iterator();
 		
-		while( iter.hasNext() )
+		for( Coordinate coordinate : coordinates )
 		{
-			list.appendTag( NBTUtil.toCoordinateTagCompound( iter.next() ));
+			list.appendTag( NBTUtil.toCoordinateTagCompound( coordinate ) );
 		}
 		return list;
 	}
 	
 	/**
-	 * Puts LimitedBlockAt in an NBTTagCompound
+	 * Puts LimitedBlock->Coordinates Mapping in an NBTTagCompound
 	 * 
-	 * @param LimitedBlockAt
+	 * @param LimitedBlock
+	 * @param Set<Coordinate>
 	 * @return NBTTagCompound
 	 */
-	public static NBTTagCompound toLimitedBlockAtTagCompound( LimitedBlockAt block )
+	public static NBTTagCompound toLimitedBlockCoordinatesTagCompound( LimitedBlock block, Set<Coordinate> coordinates )
 	{
 		NBTTagCompound comp = new NBTTagCompound();
 		
-		comp.setString( NBT_LIMITEDBLOCKAT_NAME, block.getLimitedBlock().toString() );
-		comp.setTag( NBT_LIMITEDBLOCKAT_COORDINATES, NBTUtil.toCoordinateTagList( block.getCoordinates() ) );
+		comp.setString( NBT_LIMITEDBLOCK_NAME, block.toString() );
+		comp.setTag(NBT_LIMITEDBLOCK_COORDINATES, NBTUtil.toCoordinateTagList( coordinates ) );
 		
 		return comp;
 	}
 	
 	/**
-	 * Puts LimitedBlockAt Set in an NBTTagList
+	 * Puts LimitedBlocks->Coordinates Mapping in an NBTTagList
 	 * 
-	 * @param Set<LimitedBlockAt>
+	 * @param Map<LimitedBlock, Set<Coordinate>> 
 	 * @return NBTTagList
 	 */
-	public static NBTTagList toLimitedBlockAtTagList( Set<LimitedBlockAt> blocks )
+	public static NBTTagList toLimitedBlockCoordinatesTagList( Map<LimitedBlock, Set<Coordinate>> blocks )
 	{
-		LimitedBlockAt block;
 		NBTTagList list = new NBTTagList();
-		Iterator<LimitedBlockAt> iter = blocks.iterator();
 		
-		while( iter.hasNext() )
-		{
-			block = iter.next();
-
-			//Only if it has coordinates
-			if( block.getCoordinates().size() > 0 )
-			{
-				list.appendTag( NBTUtil.toLimitedBlockAtTagCompound( block ) );
-			}
+		for( Entry<LimitedBlock, Set<Coordinate>> entry : blocks.entrySet() )
+		{		
+			list.appendTag( NBTUtil.toLimitedBlockCoordinatesTagCompound( entry.getKey(), entry.getValue() ) );
 		}
 		return list;
 	}
@@ -121,11 +115,11 @@ public class NBTUtil
 	 * @param String
 	 * @return NBTTagCompound
 	 */
-	public static NBTTagCompound toLimitedBlockOwnerTagCompound( Coordinate coordinate, String uuid )
+	public static NBTTagCompound toLimitedBlockOwnerTagCompound( Coordinate coordinate, UUID uuid )
 	{
 		NBTTagCompound comp = new NBTTagCompound();
 		
-		comp.setString( NBT_LIMITEDBLOCKOWNER_UUID, uuid );
+		comp.setString( NBT_LIMITEDBLOCKOWNER_UUID, uuid.toString() );
 		comp.setTag( NBT_LIMITEDBLOCKOWNER_COORDINATE, NBTUtil.toCoordinateTagCompound( coordinate ) );
 		
 		return comp;
@@ -134,20 +128,19 @@ public class NBTUtil
 	/**
 	 * Puts Coordinate->Owner Map into an NBTTagList
 	 * 
-	 * @param Map<Coordinate, String>
+	 * @param Map<Coordinate, UUID>
 	 * @return NBTTagList
 	 */
-	public static NBTTagList toLimitedBlockOwnerTagList( Map<Coordinate, String> owners )
+	public static NBTTagList toLimitedBlockOwnerTagList( Map<Coordinate, UUID> owners )
 	{
-		Entry entry;
 		NBTTagList list = new NBTTagList();
-		Iterator<Entry<Coordinate, String>> iter = owners.entrySet().iterator();
 		
-		while( iter.hasNext() )
+		for( Entry<Coordinate, UUID> entry : owners.entrySet() )
 		{
-			entry = iter.next();
-			
-			list.appendTag( NBTUtil.toLimitedBlockOwnerTagCompound( (Coordinate)entry.getKey(), (String)entry.getValue() ));
+			list.appendTag( NBTUtil.toLimitedBlockOwnerTagCompound(
+				(Coordinate)entry.getKey(),
+				(UUID)entry.getValue()
+			));
 		}
 		return list;
 	}
@@ -200,60 +193,74 @@ public class NBTUtil
 	}
 	
 	/**
-	 * Gets LimitedBlockAt out of an NBTTagCompound
+	 * Get one LimitedBlock with Set<Coordinate> out of an NBTTagCompound
 	 * 
 	 * @param NBTTagCompound
-	 * @return LimitedBlockAt
+	 * @return Map<LimitedBlock, Set<Coordinate>>
 	 * @throws ParseException
 	 * @throws NBTException
 	 */
-	public static LimitedBlockAt toLimitedBlockAt( NBTTagCompound comp ) throws ParseException, NBTException
+	public static Map<LimitedBlock, Set<Coordinate>> toLimitedBlockCoordinatesMap( NBTTagCompound comp ) throws ParseException, NBTException
 	{
-		//First Param: Parse NBT String to ItemStack and search LimitedBlock Reference by this ItemStack
-		return new LimitedBlockAt(
-			LimitedResources.getLimitedBlockByItemStack( ParserUtil.parseStringToItemStack( comp.getString( NBT_LIMITEDBLOCKAT_NAME ) ) ),
-			NBTUtil.toCoordinateSet( (NBTTagList)comp.getTag( NBT_LIMITEDBLOCKAT_COORDINATES ) )
+		Map<LimitedBlock, Set<Coordinate>> result = new HashMap<LimitedBlock, Set<Coordinate>>();	
+		result.put(
+			LimitedResources.getLimitedBlockByItemStack( ParserUtil.parseStringToItemStack( comp.getString( NBT_LIMITEDBLOCK_NAME ) ) ),
+			NBTUtil.toCoordinateSet( (NBTTagList)comp.getTag( NBT_LIMITEDBLOCK_COORDINATES ) )
 		);
+		return result;
 	}
 	
 	/**
-	 * Gets LimitedBlockAt Set out of an NBTTagList
+	 * Get multiple LimitedBlocks with Set<Coordiante> out of an NBTTagList
 	 * 
 	 * @param NBTTagList
-	 * @return Set<LimitedBlockAt>
+	 * @return Map<LimitedBlock, Set<Coordinate>>
+	 * @throws NBTException 
+	 * @throws ParseException 
 	 */
-	public static Set<LimitedBlockAt> toLimitedBlockAtSet( NBTTagList list )
+	public static Map<LimitedBlock, Set<Coordinate>> toLimitedBlocksCoordinatesMap( NBTTagList list ) throws ParseException, NBTException
 	{
-		Set<LimitedBlockAt> blocks = new HashSet<LimitedBlockAt>();
+		Map<LimitedBlock, Set<Coordinate>> result = new HashMap<LimitedBlock, Set<Coordinate>>();
 		
 		for( int i = 0; i < list.tagCount(); i++ )
 		{
-			try 
-			{
-				blocks.add( NBTUtil.toLimitedBlockAt( list.getCompoundTagAt( i ) ) );
-			} 
-			catch ( ParseException e )
-			{
-				Log.error( e.getMessage() );
-			} 
-			catch ( NBTException e ) 
-			{
-				Log.error( e.getMessage() );
-			}
+			result.putAll( NBTUtil.toLimitedBlockCoordinatesMap( list.getCompoundTagAt( i ) ) );
 		}
-		return blocks;
+		return result;
 	}
 	
 	/**
-	 * Gets Coordinate->Owner Map out of an NBTTagList
-	 * @param NBTTagList
+	 * Get one Coordinate->Owner out of an NBTTagCompound
+	 * 
+	 * @param NBTTagCompound
 	 * @return Map<Coordinate, String>
+	 * @throws NBTException 
 	 */
-	public static Map<Coordinate, String> toLimitedBlockOwnerMap( NBTTagList list )
+	public static Map<Coordinate, UUID> toLimitedBlockOwnerMap( NBTTagCompound comp ) throws NBTException
 	{
-		Map<Coordinate, String> owners = new HashMap<Coordinate, String>();
-		
-		
-		return owners;
+		Map<Coordinate, UUID> result = new HashMap<Coordinate, UUID>();
+		result.put(
+			NBTUtil.toCoordinate( (NBTTagCompound) comp.getTag( NBT_LIMITEDBLOCKOWNER_COORDINATE ) ),
+			UUID.fromString( comp.getString( NBT_LIMITEDBLOCKOWNER_UUID ) )
+		);
+		return result;
 	}
+	
+	/**
+	 * Get multiple Coordinate->Owner out of an NBTTagList
+	 * 
+	 * @param NBTTagList 
+	 * @return Map<Coordinate, String>
+	 * @throws NBTException 
+	 */
+	public static Map<Coordinate, UUID> toLimitedBlockOwnersMap( NBTTagList list ) throws NBTException
+	{
+		Map<Coordinate, UUID> result = new HashMap<Coordinate, UUID>();
+		
+		for( int i = 0; i < list.tagCount(); i++ )
+		{
+			result.putAll( NBTUtil.toLimitedBlockOwnerMap(list.getCompoundTagAt( i ) ) );
+		}
+		return result;
+	}	
 }

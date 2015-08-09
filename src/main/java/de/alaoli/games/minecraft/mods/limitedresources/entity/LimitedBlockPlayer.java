@@ -1,0 +1,285 @@
+package de.alaoli.games.minecraft.mods.limitedresources.entity;
+
+import java.text.ParseException;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Observable;
+import java.util.Set;
+import java.util.Map.Entry;
+
+import de.alaoli.games.minecraft.mods.limitedresources.Log;
+import de.alaoli.games.minecraft.mods.limitedresources.data.Coordinate;
+import de.alaoli.games.minecraft.mods.limitedresources.data.LimitedBlock;
+import de.alaoli.games.minecraft.mods.limitedresources.util.NBTUtil;
+import de.alaoli.games.minecraft.mods.limitedresources.world.LimitedBlockOwners;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTException;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
+import net.minecraft.world.World;
+import net.minecraftforge.common.DimensionManager;
+import net.minecraftforge.common.IExtendedEntityProperties;
+
+public class LimitedBlockPlayer extends Observable implements IExtendedEntityProperties
+{
+	/********************************************************************************
+	 * Constants
+	 ********************************************************************************/
+	
+	public final static String EXT_PROP_NAME = "de.alaoli.games.minecraft.mods.limitedresources.entity.EntityPlayerWithLimitedBlocks";
+	public final static String NBT_LIMITEDBLOCKCOORDINATES_MAP = "LIMITEDBLOCKCOORDINATESMAP";
+	
+	/********************************************************************************
+	 * Attributes
+	 ********************************************************************************/
+
+	public EntityPlayer entityPlayer;
+	
+	//private Set<LimitedBlockAt> limitedBlocksAt;
+	
+	/**
+	 * Mapping LimitedBlock -> Coordinates
+	 */
+	private Map<LimitedBlock, Set<Coordinate>> blocks;
+
+	private Coordinate lastChange;
+	
+	/********************************************************************************
+	 * Methods - Constructor
+	 ********************************************************************************/
+		
+	public LimitedBlockPlayer( EntityPlayer entityPlayer )
+	{
+		this.entityPlayer = entityPlayer;
+		//this.limitedBlocksAt = new HashSet<LimitedBlockAt>();
+		this.blocks = new HashMap<LimitedBlock, Set<Coordinate>>();
+	}	
+	
+	/********************************************************************************
+	 * Interface - IExtendedEntityProperties
+	 ********************************************************************************/
+	
+	@Override
+	public void saveNBTData( NBTTagCompound compound ) 
+	{
+		NBTTagCompound prop = new NBTTagCompound();
+		
+		prop.setTag( NBT_LIMITEDBLOCKCOORDINATES_MAP, NBTUtil.toLimitedBlockCoordinatesTagList( this.blocks ) );
+		compound.setTag( EXT_PROP_NAME, prop );
+	}
+
+	@Override
+	public void loadNBTData( NBTTagCompound compound ) 
+	{
+		NBTTagCompound prop = (NBTTagCompound) compound.getTag( EXT_PROP_NAME );
+		this.blocks.clear();
+		
+		try
+		{
+			this.blocks.putAll( 
+				NBTUtil.toLimitedBlocksCoordinatesMap( (NBTTagList) prop.getTag( NBT_LIMITEDBLOCKCOORDINATES_MAP ) )
+			);
+		} 
+		catch ( ParseException e )
+		{
+			Log.error( e.getMessage() );
+		} 
+		catch ( NBTException e ) 
+		{
+			Log.error( e.getMessage() );
+		}
+	}	
+	
+	@Override
+	public void init( Entity entity, World world ) { /*Not used yet*/ }
+
+	/********************************************************************************
+	 * Methods - Getter / Setter
+	 ********************************************************************************/
+	
+	/**
+	 * Returns last coordinate changes
+	 * 
+	 * @return Coordinate|null
+	 */
+	public Coordinate getLastChange()
+	{
+		return this.lastChange;
+	}
+	
+	/**
+	 * Returns Coordinates Set for LimitedBlock
+	 * 
+	 * @param LimitedBlock
+	 * @return Set<Coordinate>
+	 */
+	public Set<Coordinate> getCoordinatsFor( LimitedBlock block )
+	{
+		return this.blocks.get( block );
+	}
+	
+	/********************************************************************************
+	 * Methods 
+	 ********************************************************************************/
+	
+	/**
+	 * Adds a coordinate -> limited block mapping
+	 * 
+	 * @param Coordinate
+	 * @param LimitedBlock
+	 * @return boolean
+	 */
+	public boolean add( LimitedBlock block, Coordinate coordinate )
+	{
+		//Initialize Limited Block
+		if( this.blocks.containsKey( block ) == false )
+		{
+			this.blocks.put( block, new HashSet<Coordinate>() );
+		}
+		Set<Coordinate> coordinates = this.blocks.get( block );
+		
+		if( coordinates.add( coordinate ) )
+		{
+			this.lastChange = coordinate;
+			
+			this.setChanged();
+			this.notifyObservers( LimitedBlockOwners.OBSERVER_ARG_ADDED );
+			
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	
+	/**
+	 * Removes a coordinate -> limited block mapping
+	 * 
+	 * @param Coordinate
+	 * @return boolean
+	 */
+	public boolean remove( Coordinate coordinate )
+	{
+		for( Entry<LimitedBlock, Set<Coordinate>> entry : this.blocks.entrySet() )
+		{
+			if( entry.getValue().contains( coordinate ) )
+			{
+				this.lastChange = coordinate;
+				entry.getValue().remove( coordinate );
+				
+				this.setChanged();
+				this.notifyObservers( LimitedBlockOwners.OBSERVER_ARG_REMOVED );
+				
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	/**
+	 * Checks if all Coordinates for all Limited Block still exists.
+	 * All non-exist coordinates will be removed.
+	 */
+	public void refresh()
+	{
+		World world;
+		ItemStack itemStackA;
+		ItemStack itemStackB;
+		
+		for( Entry<LimitedBlock, Set<Coordinate>> entry : this.blocks.entrySet() )
+		{		
+			for( Coordinate coordinate : entry.getValue() )
+			{
+				world		= DimensionManager.getWorld( coordinate.getDimId() );
+				itemStackA	= entry.getKey().getItemStack();
+				itemStackB	= new ItemStack(
+					world.getBlock( coordinate.getX(), coordinate.getY(), coordinate.getZ() ),
+					1,
+					world.getBlockMetadata( coordinate.getX(), coordinate.getY(), coordinate.getZ() )	
+				);
+				
+				//if Block or MetaId != remove Coordinate
+				if( ( itemStackA.getItem().equals( itemStackB.getItem() ) == false ) || 
+					( itemStackA.getItemDamage() != itemStackB.getItemDamage() ) )			
+				{
+					this.remove( coordinate );
+				}				
+			}
+		}
+	}
+
+	public boolean canPlaceBlock( LimitedBlock block )
+	{
+		//If Block is not listed
+		if( this.blocks.containsKey( block ) == false )
+		{
+			return true;
+		}
+		
+		//Check if limit is not reached
+		if( block.getLimit() > this.blocks.get( block ).size() )
+		{
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Returns how many limited blocks have been placed
+	 * 
+	 * @param LimitedBlock
+	 * @return int
+	 */
+	public int countBlocksPlaced( LimitedBlock block )
+	{
+		return this.blocks.get( block ).size();
+	}
+	
+	/**
+	 * Returns true if player has placed 1+ blocks
+	 * 
+	 * @param LimitedBlock
+	 * @return boolean
+	 */
+	public boolean hasBlockPlaced( LimitedBlock block )
+	{
+		if( ( this.blocks.containsKey( block ) ) && 
+			( this.blocks.get( block ).size() > 0 ) )
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	
+	/********************************************************************************
+	 * Methods - Static 
+	 ********************************************************************************/
+	
+	/**
+	 * Register extends properties to EntityPlayer
+	 * 
+	 * @param EntityPlayer
+	 */
+	public static final void register( EntityPlayer entityPlayer )
+	{
+		entityPlayer.registerExtendedProperties( LimitedBlockPlayer.EXT_PROP_NAME, new LimitedBlockPlayer( entityPlayer ) );
+	}
+
+	/**
+	 * Get Player with extended properties.
+	 * 
+	 * @param EntityPlayer
+	 * @return EntityPlayerWithLimitedBlocks|null
+	 */
+	public static final LimitedBlockPlayer get( EntityPlayer entityPlayer )
+	{
+		return (LimitedBlockPlayer) entityPlayer.getExtendedProperties( LimitedBlockPlayer.EXT_PROP_NAME );
+	}
+}

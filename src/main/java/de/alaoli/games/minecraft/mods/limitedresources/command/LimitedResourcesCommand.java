@@ -1,13 +1,11 @@
 package de.alaoli.games.minecraft.mods.limitedresources.command;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import de.alaoli.games.minecraft.mods.limitedresources.LimitedResources;
 import de.alaoli.games.minecraft.mods.limitedresources.data.Coordinate;
 import de.alaoli.games.minecraft.mods.limitedresources.data.LimitedBlock;
-import de.alaoli.games.minecraft.mods.limitedresources.data.LimitedBlockAt;
-import de.alaoli.games.minecraft.mods.limitedresources.entity.EntityPlayerWithLimitedBlocks;
+import de.alaoli.games.minecraft.mods.limitedresources.entity.LimitedBlockPlayer;
 import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.util.ChatComponentText;
@@ -138,49 +136,6 @@ public class LimitedResourcesCommand implements ICommand
 	}
 
 	/********************************************************************************
-	 * Methods - Messages
-	 ********************************************************************************/
-
-	/**
-	 * Only sends a "No coordinates" message
-	 * 
-	 * @param ICommandSender
-	 */
-	private void messageNoCoordinates( ICommandSender sender )
-	{
-		sender.addChatMessage( new ChatComponentText( "  No coordinates." ) );
-	}
-
-	/**
-	 * Lists coordinates 
-	 * 
-	 * @param ICommandSender
-	 * @param LimitedBlockAt
-	 */
-	private void messageLimitedBlockAt( ICommandSender sender, LimitedBlockAt block )
-	{
-		//No block no coordinates to list
-		if( block == null )
-		{
-			this.messageNoCoordinates( sender );
-			return;
-		}
-		
-		if( block.getCoordinates().size() == 0 )
-		{
-			this.messageNoCoordinates( sender );
-			return;
-		}
-		Iterator<Coordinate> iter = block.getCoordinates().iterator();
-		
-		//Lists coordinates
-		while( iter.hasNext() )
-		{
-			sender.addChatMessage( new ChatComponentText( "  " + iter.next().toString() ) );	
-		}
-	}
-	
-	/********************************************************************************
 	 * Methods - Process Commands
 	 ********************************************************************************/
 	
@@ -204,19 +159,14 @@ public class LimitedResourcesCommand implements ICommand
 	private void processCommandLimits( ICommandSender sender, String[] args )
 	{
 		StringBuilder message;
-		LimitedBlock block;
-		LimitedBlockAt blockAt;
 		
-		EntityPlayerWithLimitedBlocks player = EntityPlayerWithLimitedBlocks.get( 
+		LimitedBlockPlayer player = LimitedBlockPlayer.get( 
 			sender.getEntityWorld().getPlayerEntityByName( sender.getCommandSenderName() ) 
 		);
-		Iterator<LimitedBlock> iter = LimitedResources.limitedBlocks.iterator();
-		
 		sender.addChatMessage( new ChatComponentText("List of all limited Blocks:"));
-			
-		while( iter.hasNext() )
+		
+		for( LimitedBlock block : LimitedResources.limitedBlocks )
 		{
-			block = iter.next();
 			message = new StringBuilder();
 			
 			message.append( " - " );
@@ -226,23 +176,17 @@ public class LimitedResourcesCommand implements ICommand
 			message.append( "." );
 			
 			//Player with limited blocks
-			if( player != null )
+			if( ( player != null ) && 
+				( player.hasBlockPlaced( block ) ) )
 			{
-				blockAt = player.getLimitedBlockAt( block );
-				
-				//has placed limited block
-				if( blockAt != null )
-				{
-					message.append( " " );
-					message.append( blockAt.getCoordinates().size() );
-					message.append( " of " );
-					message.append( block.getLimit() );
-					message.append( " placed." );
-				}
+				message.append( " " );
+				message.append( player.countBlocksPlaced( block ) );
+				message.append( " of " );
+				message.append( block.getLimit() );
+				message.append( " placed." );
 			}
 			sender.addChatMessage( new ChatComponentText( message.toString() ) );
 		}
-		
 	}
 	
 	/**
@@ -253,29 +197,36 @@ public class LimitedResourcesCommand implements ICommand
 	 */
 	private void processCommandWhere( ICommandSender sender, String[] args )
 	{
-		LimitedBlock block;
+		StringBuilder message;
 		
-		EntityPlayerWithLimitedBlocks player = EntityPlayerWithLimitedBlocks.get( 
+		LimitedBlockPlayer player = LimitedBlockPlayer.get( 
 			sender.getEntityWorld().getPlayerEntityByName( sender.getCommandSenderName() ) 
 		);
-		Iterator<LimitedBlock> iter = LimitedResources.limitedBlocks.iterator();
-
-		while( iter.hasNext() )
+		
+		for( LimitedBlock block : LimitedResources.limitedBlocks )
 		{
-			block = iter.next();
+			message = new StringBuilder();
+			message.append( block.getItemStack().getDisplayName() );
+			message.append( " placed at (dim, x, y, z): " );
 			
-			sender.addChatMessage( new ChatComponentText( 
-				block.getItemStack().getDisplayName() + " placed at (dim, x, y, z): " 
-			) );
+			sender.addChatMessage( new ChatComponentText( message.toString() ) );
 			
 			//Player with limited blocks
-			if( player != null )
+			if( ( player != null ) && 
+				( player.hasBlockPlaced( block ) ) )
 			{
-				this.messageLimitedBlockAt( sender, player.getLimitedBlockAt( block ) );
+				for( Coordinate coordinate : player.getCoordinatsFor( block ) )
+				{
+					message = new StringBuilder();
+					message.append( "  " );
+					message.append( coordinate.toString() );
+					
+					sender.addChatMessage( new ChatComponentText( message.toString() ) );
+				}
 			}
 			else
 			{
-				this.messageNoCoordinates( sender );
+				sender.addChatMessage( new ChatComponentText( "  No coordinates." ) );
 			}
 		}
 	}	

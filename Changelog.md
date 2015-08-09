@@ -1,7 +1,9 @@
 # Changelog
 
 ## Version 1.0.0
+- *IMPORTANT!* Version 1.0.0 is *not* compatible to previous versions
 - Added Limited Block Owners
+- Rework LimitedBlockPlayer<->LimitedBlockOwner Data Structure 
 
 ## Version 0.10.0
 - Added placing ChatMessage
