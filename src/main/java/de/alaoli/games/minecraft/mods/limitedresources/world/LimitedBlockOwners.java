@@ -90,13 +90,11 @@ public class LimitedBlockOwners extends WorldSavedData implements Observer
 		switch( (int)argument )
 		{
 			case OBSERVER_ARG_ADDED :
-				this.owners.put( player.getLastChange(), player.entityPlayer.getUniqueID() );
-				player.entityPlayer.addChatMessage( new ChatComponentText( "ADDED: " + player.getLastChange() ));
+				this.add( player.getLastChange(), player.entityPlayer );
 				break;
 				
 			case OBSERVER_ARG_REMOVED :
-				this.owners.remove( player.getLastChange() );
-				player.entityPlayer.addChatMessage( new ChatComponentText( "REMOVED: " + player.getLastChange() ));
+				this.remove( player.getLastChange() );
 				break;	
 		}
 	}
@@ -114,6 +112,12 @@ public class LimitedBlockOwners extends WorldSavedData implements Observer
 	 * Methods 
 	 ********************************************************************************/
 	
+	/**
+	 * Adds Owner to an coordinate
+	 * 
+	 * @param Coordinate
+	 * @param EntityPlayer
+	 */
 	public void add( Coordinate coordinate, EntityPlayer player )
 	{
 		if( this.owners.containsKey( coordinate ) )
@@ -124,16 +128,54 @@ public class LimitedBlockOwners extends WorldSavedData implements Observer
 		this.markDirty();
 	}
 	
+	/**
+	 * Removes Owner from coordinate
+	 * 
+	 * @param Coordinate
+	 */
 	public void remove( Coordinate coordinate )
 	{
 		this.owners.remove( coordinate );
 		this.markDirty();
 	}
 	
+	/**
+	 * Checks if coordinate has an owner
+	 * 
+	 * @param Coordinate
+	 * @return boolean
+	 */
+	public boolean hasOwner( Coordinate coordinate )
+	{
+		return this.owners.containsKey( coordinate );
+	}
+	
+	/**
+	 * Checks if player owns block at coordinate
+	 * 
+	 * @param Coordinate
+	 * @param EntityPlayer
+	 * @return boolean
+	 */
+	public boolean isOwner( Coordinate coordinate, EntityPlayer player )
+	{
+		if( this.owners.containsKey( coordinate ) == false )
+		{
+			return false;
+		}
+		return this.owners.get(coordinate).equals( player.getUniqueID() );
+	}
+	
 	/********************************************************************************
 	 * Methods - Static 
 	 ********************************************************************************/
 	
+	/**
+	 * Gets LimitedBlockOwners WorldSavedData
+	 * 
+	 * @param World
+	 * @return LimitedBlockOwners
+	 */
 	public static LimitedBlockOwners get( World world )
 	{
 		if( world.mapStorage == null )
