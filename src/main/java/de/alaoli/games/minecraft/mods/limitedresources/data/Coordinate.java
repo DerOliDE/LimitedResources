@@ -45,16 +45,19 @@ public class Coordinate
 	@Override
 	public boolean equals( Object obj ) 
 	{
+		//Same object -> true
 		if( this == obj ) 
 		{
 			return true;
 		}
+		//No object -> false
 		if( obj == null )
 		{
 			return false;
 		}
 		Coordinate coordinate = (Coordinate) obj;
 		
+		//Same coordinates -> true
 		if( ( coordinate.getDimId() == this.dimId ) &&
 			( coordinate.getX() == this.x ) &&
 			( coordinate.getY() == this.y ) &&
