@@ -171,6 +171,7 @@ public class BlockPlacingEvent
 			event.blockSnapshot.z
 		);
 		player.addObserver( this.owners );
+		player.refresh();
 		
 		for( LimitedBlock block : LimitedResources.limitedBlocks )
 		{
@@ -179,7 +180,7 @@ public class BlockPlacingEvent
 				//Check if block limit is reached
 				if( player.canPlaceBlock( block ) )
 				{
-					player.refresh();
+					
 					player.add( block, coordinate );
 					
 					this.messageBlockPlaced( player, block );

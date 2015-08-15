@@ -224,6 +224,7 @@ public class LimitedBlockPlayer extends Observable implements IExtendedEntityPro
 				}				
 			}
 		}
+		this.isRefreshed = true;
 	}
 
 	/**
