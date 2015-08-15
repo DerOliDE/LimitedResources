@@ -203,7 +203,9 @@ public class LimitedBlockPlayer extends Observable implements IExtendedEntityPro
 		World world;
 		ItemStack itemStackA;
 		ItemStack itemStackB;
+		Set<Coordinate> toRemove = new HashSet<Coordinate>();
 		
+		//Search
 		for( Entry<LimitedBlock, Set<Coordinate>> entry : this.blocks.entrySet() )
 		{		
 			for( Coordinate coordinate : entry.getValue() )
@@ -220,9 +222,15 @@ public class LimitedBlockPlayer extends Observable implements IExtendedEntityPro
 				if( ( itemStackA.getItem().equals( itemStackB.getItem() ) == false ) || 
 					( itemStackA.getItemDamage() != itemStackB.getItemDamage() ) )			
 				{
-					this.remove( coordinate );
+					toRemove.add( coordinate );
 				}				
 			}
+		}
+		
+		//Remove
+		for( Coordinate remove : toRemove )
+		{
+			this.remove( remove );
 		}
 		this.isRefreshed = true;
 	}
