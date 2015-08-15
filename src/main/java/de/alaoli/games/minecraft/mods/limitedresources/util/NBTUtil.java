@@ -3,14 +3,12 @@ package de.alaoli.games.minecraft.mods.limitedresources.util;
 import java.text.ParseException;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
 
 import de.alaoli.games.minecraft.mods.limitedresources.LimitedResources;
-import de.alaoli.games.minecraft.mods.limitedresources.Log;
 import de.alaoli.games.minecraft.mods.limitedresources.data.Coordinate;
 import de.alaoli.games.minecraft.mods.limitedresources.data.LimitedBlock;
 //import de.alaoli.games.minecraft.mods.limitedresources.data.LimitedBlockAt;
@@ -138,8 +136,8 @@ public class NBTUtil
 		for( Entry<Coordinate, UUID> entry : owners.entrySet() )
 		{
 			list.appendTag( NBTUtil.toLimitedBlockOwnerTagCompound(
-				(Coordinate)entry.getKey(),
-				(UUID)entry.getValue()
+				entry.getKey(),
+				entry.getValue()
 			));
 		}
 		return list;
