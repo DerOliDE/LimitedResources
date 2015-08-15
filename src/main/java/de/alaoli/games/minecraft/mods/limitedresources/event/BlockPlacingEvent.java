@@ -1,16 +1,7 @@
 package de.alaoli.games.minecraft.mods.limitedresources.event;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
-
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
-import cpw.mods.fml.common.gameevent.PlayerEvent.PlayerLoggedOutEvent;
 import de.alaoli.games.minecraft.mods.limitedresources.data.Coordinate;
 import de.alaoli.games.minecraft.mods.limitedresources.data.LimitedBlock;
 import de.alaoli.games.minecraft.mods.limitedresources.entity.LimitedBlockPlayer;
@@ -21,7 +12,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ChatComponentText;
 import net.minecraftforge.event.entity.EntityEvent.EntityConstructing;
-import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.world.BlockEvent.BreakEvent;
 import net.minecraftforge.event.world.BlockEvent.MultiPlaceEvent;
 import net.minecraftforge.event.world.BlockEvent.PlaceEvent;
@@ -98,6 +88,7 @@ public class BlockPlacingEvent
 					if( this.owners.isOwner( coordinate, player.entityPlayer ) )
 					{
 						player.remove( coordinate );
+						player.refresh();
 					}
 					else
 					{
@@ -188,6 +179,7 @@ public class BlockPlacingEvent
 				//Check if block limit is reached
 				if( player.canPlaceBlock( block ) )
 				{
+					player.refresh();
 					player.add( block, coordinate );
 					
 					this.messageBlockPlaced( player, block );

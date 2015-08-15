@@ -51,15 +51,20 @@ public class LimitedBlockPlayer extends Observable implements IExtendedEntityPro
 	 */
 	private Coordinate lastChange;
 	
+	/**
+	 * Flag if coordinates were refreshed after loading NBT data
+	 */
+	private boolean isRefreshed;
+	
 	/********************************************************************************
 	 * Methods - Constructor
 	 ********************************************************************************/
 		
 	public LimitedBlockPlayer( EntityPlayer entityPlayer )
 	{
-		this.entityPlayer = entityPlayer;
-		//this.limitedBlocksAt = new HashSet<LimitedBlockAt>();
-		this.blocks = new HashMap<LimitedBlock, Set<Coordinate>>();
+		this.entityPlayer	= entityPlayer;
+		this.blocks			= new HashMap<LimitedBlock, Set<Coordinate>>();
+		this.isRefreshed	= false;
 	}	
 	
 	/********************************************************************************
@@ -86,6 +91,7 @@ public class LimitedBlockPlayer extends Observable implements IExtendedEntityPro
 			this.blocks.putAll( 
 				NBTUtil.toLimitedBlocksCoordinatesMap( (NBTTagList) prop.getTag( NBT_LIMITEDBLOCKCOORDINATES_MAP ) )
 			);
+			this.isRefreshed = false;
 		} 
 		catch ( ParseException e )
 		{
@@ -190,6 +196,10 @@ public class LimitedBlockPlayer extends Observable implements IExtendedEntityPro
 	 */
 	public void refresh()
 	{
+		if( this.isRefreshed )
+		{
+			return;
+		}
 		World world;
 		ItemStack itemStackA;
 		ItemStack itemStackB;
