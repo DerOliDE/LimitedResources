@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 1.1.0
+- *IMPORTANT!* Config File changed, check before running the game.
+- Added Feature: Ignore metadata
+
 ## Version 1.0.1
 - Fixed refresh coordinates bug.
 
