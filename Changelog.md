@@ -1,7 +1,7 @@
 # Changelog
 
 ## Version 1.1.0
-- *IMPORTANT!* Config File changed, check before running the game.
+- *IMPORTANT!* Config File changed, check before running the game. (  @<metaId> replaced by :<metaid> or :* to ignore metadids )
 - Added Feature: Ignore metadata
 
 ## Version 1.0.1
