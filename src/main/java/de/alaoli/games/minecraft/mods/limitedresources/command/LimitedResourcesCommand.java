@@ -9,6 +9,7 @@ import de.alaoli.games.minecraft.mods.limitedresources.entity.LimitedBlockPlayer
 import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.util.ChatComponentText;
+import net.minecraftforge.oredict.OreDictionary;
 
 public class LimitedResourcesCommand implements ICommand
 {
@@ -173,6 +174,12 @@ public class LimitedResourcesCommand implements ICommand
 			message.append( block.getLimit() );
 			message.append( "x " );
 			message.append( block.getItemStack().getDisplayName() );
+			
+			//Ignore MetaIds
+			if( block.getItemStack().getItemDamage() == OreDictionary.WILDCARD_VALUE )
+			{
+				message.append( " (Metadata ignored)" );
+			}
 			message.append( "." );
 			
 			//Player with limited blocks
@@ -207,6 +214,12 @@ public class LimitedResourcesCommand implements ICommand
 		{
 			message = new StringBuilder();
 			message.append( block.getItemStack().getDisplayName() );
+			
+			//Ignore MetaIds
+			if( block.getItemStack().getItemDamage() == OreDictionary.WILDCARD_VALUE )
+			{
+				message.append( " (Metadata ignored)" );
+			}
 			message.append( " placed at (dim, x, y, z): " );
 			
 			sender.addChatMessage( new ChatComponentText( message.toString() ) );

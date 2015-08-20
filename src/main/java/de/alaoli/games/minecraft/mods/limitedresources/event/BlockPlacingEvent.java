@@ -15,6 +15,7 @@ import net.minecraftforge.event.entity.EntityEvent.EntityConstructing;
 import net.minecraftforge.event.world.BlockEvent.BreakEvent;
 import net.minecraftforge.event.world.BlockEvent.MultiPlaceEvent;
 import net.minecraftforge.event.world.BlockEvent.PlaceEvent;
+import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.event.world.WorldEvent;
 
 public class BlockPlacingEvent 
@@ -122,6 +123,12 @@ public class BlockPlacingEvent
 		
 		message.append( "[Limited Resources] " );
 		message.append( block.getItemStack().getDisplayName() );
+		
+		//Ignore MetaIds
+		if( block.getItemStack().getItemDamage() == OreDictionary.WILDCARD_VALUE )
+		{
+			message.append( " (Metadata ignored)" );
+		}
 		message.append( " placed. (" );
 		message.append( player.countBlocksPlaced( block ) );
 		message.append( " of " );

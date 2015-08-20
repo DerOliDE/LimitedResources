@@ -35,8 +35,9 @@ public class Config
 		public static boolean isEnabled;
 		
 		/**
-		 * Limited Blocks <mod>:<block>[@<metaid>]=<limit>. 
+		 * Limited Blocks <mod>:<block>[:<metaid>|:*]=<limit>. 
 		 * Example minecraft:stone=2 allows 2 Stone placed per Player.
+		 * MetaId * to igonore metaids.
 		 */
 		public static String[] blockList;
 	}
@@ -81,8 +82,10 @@ public class Config
 			"blockList", 
 			"limitedBlocks", 
 			new String[]{}, 
-			"Limited Blocks <mod>:<block>[@<metaid>]=<limit>.\n"
+			"Limited Blocks <mod>:<block>[:<metaid>|:*]=<limit>.\n"
 			+ "Example minecraft:stone=2 allows 2 Stone placed per Player.\n"
+			+ "MetaId * to igonore metaids.\n"
+					
 		);
     	
     	//Commands

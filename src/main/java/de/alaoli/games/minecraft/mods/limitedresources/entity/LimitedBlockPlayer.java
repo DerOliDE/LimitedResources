@@ -201,8 +201,8 @@ public class LimitedBlockPlayer extends Observable implements IExtendedEntityPro
 			return;
 		}
 		World world;
-		ItemStack itemStackA;
-		ItemStack itemStackB;
+		LimitedBlock block;
+		ItemStack itemStack;
 		Set<Coordinate> toRemove = new HashSet<Coordinate>();
 		
 		//Search
@@ -211,16 +211,16 @@ public class LimitedBlockPlayer extends Observable implements IExtendedEntityPro
 			for( Coordinate coordinate : entry.getValue() )
 			{
 				world		= DimensionManager.getWorld( coordinate.getDimId() );
-				itemStackA	= entry.getKey().getItemStack();
-				itemStackB	= new ItemStack(
+				block		= entry.getKey();
+				itemStack	= new ItemStack(
 					world.getBlock( coordinate.getX(), coordinate.getY(), coordinate.getZ() ),
 					1,
 					world.getBlockMetadata( coordinate.getX(), coordinate.getY(), coordinate.getZ() )	
 				);
 				
 				//if Block or MetaId != remove Coordinate
-				if( ( itemStackA.getItem().equals( itemStackB.getItem() ) == false ) || 
-					( itemStackA.getItemDamage() != itemStackB.getItemDamage() ) )			
+				if( ( block == null ) ||
+					( block.isLimitedBlock( itemStack ) == false ) )		
 				{
 					toRemove.add( coordinate );
 				}				

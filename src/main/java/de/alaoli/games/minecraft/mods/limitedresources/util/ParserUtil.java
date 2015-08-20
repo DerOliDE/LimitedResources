@@ -6,6 +6,7 @@ import java.util.Set;
 
 import net.minecraft.block.Block;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.oredict.OreDictionary;
 import cpw.mods.fml.common.registry.GameRegistry;
 import de.alaoli.games.minecraft.mods.limitedresources.Log;
 import de.alaoli.games.minecraft.mods.limitedresources.data.LimitedBlock;
@@ -13,7 +14,8 @@ import de.alaoli.games.minecraft.mods.limitedresources.data.LimitedBlock;
 public class ParserUtil 
 {
 	/**
-	 * Parse from String "<mod>:<block>[@<metaid>]" to ItemStack Object
+	 * Parse from String "<mod>:<block>[:<metaid>|:*]" to ItemStack Object
+	 * MetaId * to igonore metaids.
 	 * 
 	 * @param String
 	 * @return ItemStack
@@ -27,7 +29,7 @@ public class ParserUtil
     	String blockName;
     	String[] parts;
     	
-    	parts = itemStack.split( "[:@]");
+    	parts = itemStack.split( "[:]");
     	
     	if( parts.length == 2 )			//without MetaID
     	{
@@ -39,7 +41,16 @@ public class ParserUtil
     	{
     		modName = parts[0];
     		blockName = parts[1];
-    		metaid = Integer.parseInt( parts[2] );
+    		
+    		//Ignore MetaIDs
+    		if( parts[ 2 ].contains( "*" ) )
+    		{
+    			metaid = OreDictionary.WILDCARD_VALUE;
+    		}
+    		else
+    		{
+    			metaid = Integer.parseInt( parts[2] );
+    		}
     	}
     	else
     	{
@@ -55,26 +66,24 @@ public class ParserUtil
 	}
 	
 	/**
-	 * Parse from String "<mod>:<block>[@<metaid>]=<limit>" to LimitedBlock Object
+	 * Parse from String "<mod>:<block>[:<metaid>|:*]" to ItemStack Object
+	 * MetaId * to igonore metaids.
 	 * 
 	 * @param String
 	 * @return LimitedBlock
 	 * @throws ParseException
 	 */
 	public static LimitedBlock parseStringToLimitedBlock( String limitedBlock ) throws ParseException
-	{
-		int limit;
-    	String[] parts;
-    	ItemStack itemStack;
-    	    
-    	parts = limitedBlock.split( "[=]");
+	{ 
+		boolean ignoreMetaId = false;
+    	String[] parts = limitedBlock.split( "[=]");
     	
     	if( parts.length < 2 )
     	{
     		throw new ParseException( "Can't parse entry '" + limitedBlock + "'.", 0 );
     	}
-    	itemStack = ParserUtil.parseStringToItemStack( parts[ 0 ] );
-    	limit = Integer.parseInt( parts[ 1 ] );
+    	ItemStack itemStack = ParserUtil.parseStringToItemStack( parts[ 0 ] );
+    	int limit = Integer.parseInt( parts[ 1 ] );
  			
     	return new LimitedBlock( itemStack, limit );		
 	}

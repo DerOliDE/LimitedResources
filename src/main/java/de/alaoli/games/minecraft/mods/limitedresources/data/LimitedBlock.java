@@ -2,6 +2,7 @@ package de.alaoli.games.minecraft.mods.limitedresources.data;
 
 import cpw.mods.fml.common.registry.GameRegistry;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.oredict.OreDictionary;
 
 public class LimitedBlock 
 {
@@ -11,7 +12,7 @@ public class LimitedBlock
 	
 	private ItemStack itemStack;
 	
-	public int limit;
+	private int limit;
 	
 	/********************************************************************************
 	 * Methodes - Constructor / Overrides
@@ -32,7 +33,7 @@ public class LimitedBlock
 				
 		if( this.itemStack.getItemDamage() > 0 )
 		{
-			result.append( "@" );
+			result.append( ":" );
 			result.append( this.itemStack.getItemDamage() );
 		}	
 		return result.toString();
@@ -49,12 +50,7 @@ public class LimitedBlock
 	{
 		ItemStack itemStack = ((LimitedBlock)obj).getItemStack();
 			
-		if( ( this.itemStack.getItem().equals( itemStack.getItem() ) ) &&
-			( this.itemStack.getItemDamage() == itemStack.getItemDamage() ) )
-		{
-			return true;
-		}
-		return false;
+		return this.isLimitedBlock( itemStack );
 	}
 	
 	/********************************************************************************
@@ -83,20 +79,26 @@ public class LimitedBlock
 	 */
 	public boolean isLimitedBlock( ItemStack itemStackA )
 	{
-		if( itemStackA == null )
+		if( ( itemStackA == null ) ||
+			( itemStackA.getItem() == null ) )
 		{
 			return false;
 		}
 		ItemStack itemStackB = this.getItemStack();
 		
+		//Ignore MetaId
+		if( ( itemStackA.getItem().equals( itemStackB.getItem() ) ) &&
+			( itemStackB.getItemDamage() == OreDictionary.WILDCARD_VALUE ) )
+		{
+			return true;
+		}
+			
+		//With MetaId
 		if( ( itemStackA.getItem().equals( itemStackB.getItem() ) ) &&
 			( itemStackA.getItemDamage() == itemStackB.getItemDamage() ) )
 		{
 			return true;
 		}
-		else
-		{
-			return false;
-		}
+		return false;
 	}
 }
