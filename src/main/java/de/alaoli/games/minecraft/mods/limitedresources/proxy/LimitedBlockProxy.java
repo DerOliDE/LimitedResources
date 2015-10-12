@@ -25,14 +25,7 @@ public class LimitedBlockProxy extends BlockContainer implements InvocationHandl
 		super( encapsulatedBlock.getMaterial() );
 		
 		//If true bypass BlockContainer Methods to encapsulated Block
-		if( encapsulatedBlock instanceof BlockContainer )
-		{
-			this.isEncapsulatedBlockContainer = true;
-		}
-		else
-		{
-			this.isEncapsulatedBlockContainer = false;
-		}
+		this.isEncapsulatedBlockContainer = encapsulatedBlock instanceof BlockContainer;
 		this.encapsulatedBlock = encapsulatedBlock;
 	}
 	
