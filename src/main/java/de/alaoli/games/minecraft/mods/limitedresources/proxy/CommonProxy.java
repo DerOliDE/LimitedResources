@@ -2,7 +2,6 @@ package de.alaoli.games.minecraft.mods.limitedresources.proxy;
 
 import java.util.HashSet;
 
-import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
