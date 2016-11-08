@@ -1,11 +1,6 @@
 package de.alaoli.games.minecraft.mods.limitedresources.proxy;
 
-public class ServerProxy implements CommonProxy
+public class ServerProxy extends CommonProxy
 {
-	@Override
-	public void registerRenderers() 
-	{
-		// TODO Auto-generated method stub
-		
-	}
+	/* Nothing to do yet */
 }
