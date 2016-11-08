@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 1.1.1
+- Fixes https://github.com/DerOli82/LimitedResources/issues/9
+- Added abbreviated commit id (Github) as version string
+
 ## Version 1.1.0
 - *IMPORTANT!* Config File changed, check before running the game. (  @\<metaId\> replaced by :\<metaid\> or :* to ignore metadids )
 - Added Feature: Ignore metadata
