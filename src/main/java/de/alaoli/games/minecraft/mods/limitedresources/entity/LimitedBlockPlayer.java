@@ -19,8 +19,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTException;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.World;
-import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.IExtendedEntityProperties;
 
 public class LimitedBlockPlayer extends Observable implements IExtendedEntityProperties
@@ -210,20 +210,28 @@ public class LimitedBlockPlayer extends Observable implements IExtendedEntityPro
 		{		
 			for( Coordinate coordinate : entry.getValue() )
 			{
-				world		= DimensionManager.getWorld( coordinate.getDimId() );
+				world		= MinecraftServer.getServer().worldServerForDimension( coordinate.getDimId() );
 				block		= entry.getKey();
-				itemStack	= new ItemStack(
-					world.getBlock( coordinate.getX(), coordinate.getY(), coordinate.getZ() ),
-					1,
-					world.getBlockMetadata( coordinate.getX(), coordinate.getY(), coordinate.getZ() )	
-				);
 				
-				//if Block or MetaId != remove Coordinate
-				if( ( block == null ) ||
-					( block.isLimitedBlock( itemStack ) == false ) )		
+				if( world != null )
 				{
-					toRemove.add( coordinate );
-				}				
+					itemStack	= new ItemStack(
+						world.getBlock( coordinate.getX(), coordinate.getY(), coordinate.getZ() ),
+						1,
+						world.getBlockMetadata( coordinate.getX(), coordinate.getY(), coordinate.getZ() )	
+					);
+					
+					//if Block or MetaId != remove Coordinate
+					if( ( block == null ) ||
+						( block.isLimitedBlock( itemStack ) == false ) )		
+					{
+						toRemove.add( coordinate );
+					}				
+				}
+				else
+				{
+					Log.error( "Can't load WorldServer for Dimension '" + coordinate.getDimId() + "'" );
+				}
 			}
 		}
 		
