@@ -1,6 +1,5 @@
 package de.alaoli.games.minecraft.mods.limitedresources.event;
 
-import java.nio.Buffer;
 
 import com.google.common.collect.EvictingQueue;
 
@@ -12,12 +11,10 @@ import de.alaoli.games.minecraft.mods.limitedresources.entity.LimitedBlockPlayer
 import de.alaoli.games.minecraft.mods.limitedresources.world.LimitedBlockOwners;
 import de.alaoli.games.minecraft.mods.limitedresources.Config;
 import de.alaoli.games.minecraft.mods.limitedresources.LimitedResources;
-import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ChatComponentText;
 import net.minecraftforge.event.entity.EntityEvent.EntityConstructing;
-import net.minecraftforge.event.terraingen.BiomeEvent.GetVillageBlockID;
 import net.minecraftforge.event.world.BlockEvent.BreakEvent;
 import net.minecraftforge.event.world.BlockEvent.MultiPlaceEvent;
 import net.minecraftforge.event.world.BlockEvent.PlaceEvent;
