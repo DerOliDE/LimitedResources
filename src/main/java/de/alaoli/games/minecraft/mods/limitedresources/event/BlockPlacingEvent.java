@@ -1,5 +1,9 @@
 package de.alaoli.games.minecraft.mods.limitedresources.event;
 
+import java.nio.Buffer;
+
+import com.google.common.collect.EvictingQueue;
+
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import de.alaoli.games.minecraft.mods.limitedresources.data.Coordinate;
@@ -8,10 +12,12 @@ import de.alaoli.games.minecraft.mods.limitedresources.entity.LimitedBlockPlayer
 import de.alaoli.games.minecraft.mods.limitedresources.world.LimitedBlockOwners;
 import de.alaoli.games.minecraft.mods.limitedresources.Config;
 import de.alaoli.games.minecraft.mods.limitedresources.LimitedResources;
+import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ChatComponentText;
 import net.minecraftforge.event.entity.EntityEvent.EntityConstructing;
+import net.minecraftforge.event.terraingen.BiomeEvent.GetVillageBlockID;
 import net.minecraftforge.event.world.BlockEvent.BreakEvent;
 import net.minecraftforge.event.world.BlockEvent.MultiPlaceEvent;
 import net.minecraftforge.event.world.BlockEvent.PlaceEvent;
@@ -25,6 +31,7 @@ public class BlockPlacingEvent
 	 ********************************************************************************/
 	
 	private LimitedBlockOwners owners;
+	EvictingQueue<String> LastBlockBreakEvent = EvictingQueue.create(5);
 	
 	/********************************************************************************
 	 * Methods - Forge Events
@@ -179,6 +186,14 @@ public class BlockPlacingEvent
 		);
 		player.addObserver( this.owners );
 		player.refresh();
+		
+		//Checking if the Event was ran befor
+		if (LastBlockBreakEvent.contains(event.toString().substring(event.toString().length() - 8)))
+		{
+			return;
+		}
+		//Saving the Last 8 Char of the Eventname with is the unique identifier, i think !!
+		LastBlockBreakEvent.add(event.toString().substring(event.toString().length() - 8));
 		
 		for( LimitedBlock block : LimitedResources.limitedBlocks )
 		{
