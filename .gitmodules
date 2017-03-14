@@ -1,0 +1,3 @@
+[submodule "lib/common-library"]
+	path = lib/common-library
+	url = https://github.com/DerOli82/common-library

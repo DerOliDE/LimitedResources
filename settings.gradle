@@ -1,0 +1,2 @@
+include ':common-library'
+project(':common-library').projectDir = new File(settingsDir, 'lib/common-library')

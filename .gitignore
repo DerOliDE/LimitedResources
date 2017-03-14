@@ -1,5 +1,6 @@
 /*
 !/.gitignore
+!/lib
 !/src
 !/gradle
 !/gradlew
@@ -8,3 +9,5 @@
 !/License.md
 !/Changelog.md
 !/build.gradle
+!/build.properties
+!/settings.gradle
