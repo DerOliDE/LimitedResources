@@ -69,6 +69,14 @@ minecraft {
     runDir = "eclipse"
 }
 
+sourceSets { 
+    lib {
+        java {
+            srcDir "lib/common-library/src/main/java/"
+        }
+    }
+}
+
 processResources {
     // this will ensure that this task is redone when the versions change.
     inputs.property "version", "${config.yadm.version}"
