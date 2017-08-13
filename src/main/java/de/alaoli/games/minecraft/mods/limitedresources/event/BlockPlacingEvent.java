@@ -1,5 +1,8 @@
 package de.alaoli.games.minecraft.mods.limitedresources.event;
 
+
+import com.google.common.collect.EvictingQueue;
+
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import de.alaoli.games.minecraft.mods.limitedresources.data.Coordinate;
@@ -25,6 +28,7 @@ public class BlockPlacingEvent
 	 ********************************************************************************/
 	
 	private LimitedBlockOwners owners;
+	EvictingQueue<String> LastBlockBreakEvent = EvictingQueue.create(5);
 	
 	/********************************************************************************
 	 * Methods - Forge Events
@@ -179,6 +183,14 @@ public class BlockPlacingEvent
 		);
 		player.addObserver( this.owners );
 		player.refresh();
+		
+		//Checking if the Event was ran befor
+		if (LastBlockBreakEvent.contains(event.toString().substring(event.toString().length() - 8)))
+		{
+			return;
+		}
+		//Saving the Last 8 Char of the Eventname with is the unique identifier, i think !!
+		LastBlockBreakEvent.add(event.toString().substring(event.toString().length() - 8));
 		
 		for( LimitedBlock block : LimitedResources.limitedBlocks )
 		{
